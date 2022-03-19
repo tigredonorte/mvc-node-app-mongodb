@@ -2,7 +2,7 @@
 
   <main>
     <form class="col-md-5 p-lg-5 mx-auto my-5" method="POST"
-      action="/shop/<%- product.id ? `edit/${product.id}` : 'add-product' -%>">
+      action="/shop/product/<%- product.id ? `edit/${product.id}` : 'add' -%>">
       <div class="mb-3">
         <label class="form-label" for="title">Product name</label>
         <input class="form-control" type="text" placeholder="Product name" name="title" value="<%- product.title -%>" />

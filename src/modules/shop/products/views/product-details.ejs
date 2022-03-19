@@ -31,7 +31,7 @@
           <h4 class="price">current price: <span>R$ <%- product.price %></span></h4>
           <p class="vote"><strong>91%</strong> of buyers enjoyed this product! <strong>(87 votes)</strong></p>
           <div class="action">
-            <form method="POST" action="/shop/cart/add">
+            <form method="POST" action="/shop/cart/increase">
               <button class="add-to-cart btn btn-primary">Add to cart</button>
               <input type="hidden" name="productId" value="<%- product.id %>" />
             </form>

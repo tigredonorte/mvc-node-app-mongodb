@@ -19,9 +19,8 @@ ShopRoutes.get('/product/:id', productsController.show);
 
 // cart
 ShopRoutes.get('/cart', cartController.list);
-ShopRoutes.post('/cart/add', cartController.add);
-ShopRoutes.post('/cart/edit/:id', cartController.edit);
-ShopRoutes.get('/cart/delete/:id', cartController.delete);
+ShopRoutes.post('/cart/increase', cartController.increase);
+ShopRoutes.post('/cart/decrease', cartController.decrease);
 
 // orders
 ShopRoutes.get('/orders', ordersController.list);
