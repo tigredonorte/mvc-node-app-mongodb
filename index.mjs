@@ -6,9 +6,9 @@ import livereload from 'livereload';
 import { ShopRoutes } from './src/modules/shop/shop.route.mjs';
 
 const liveReloadServer = livereload.createServer();
-liveReloadServer.server.once("connection", () => {
+liveReloadServer.server.once('connection', () => {
   setTimeout(() => {
-    liveReloadServer.refresh("/");
+    liveReloadServer.refresh('/');
   }, 100);
 });
 
@@ -24,4 +24,5 @@ app.use('/shop', ShopRoutes);
 app.get('/', (req, res) => res.redirect('/shop'));
 app.use((req, res) => res.render('modules/index/views/404', { docTitle: 'Page not found' }));
 
+// eslint-disable-next-line
 app.listen('3000', () => console.log('\nRunning on port 3000\n'));

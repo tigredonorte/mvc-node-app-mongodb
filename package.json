@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.mjs",
   "scripts": {
-    "start": "start http://localhost:3000 & nodemon --ext *"
+    "start": "start http://localhost:3000 & nodemon --ext *",
+    "lint": "./node_modules/.bin/eslint --cache --ext .mjs,js .",
+    "lint:fix": "./node_modules/.bin/eslint --cache --fix --ext .mjs,js ."
   },
   "repository": {
     "type": "git",
@@ -24,10 +26,26 @@
     "livereload": "^0.9.3"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "eslint": "^8.11.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.7",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.6.0"
   },
   "bugs": {
     "url": "https://github.com/tigredonorte/mvc-nodeapp/issues"
   },
-  "homepage": "https://github.com/tigredonorte/mvc-nodeapp#readme"
+  "homepage": "https://github.com/tigredonorte/mvc-nodeapp#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{mjs,js,jsx,ts,tsx}": [
+      "npm run lint:fix"
+    ]
+  }
 }
