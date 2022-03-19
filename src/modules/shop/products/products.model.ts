@@ -2,6 +2,14 @@ import fs from 'fs/promises';
 
 const fileName = 'data/products.json';
 
+export interface Product {
+  id: string;
+  title: string;
+  price: number;
+  description: string;
+  image: string;
+}
+
 export class ProductsModel {
   async getProducts() {
     const read = await fs.readFile(fileName);
@@ -9,7 +17,7 @@ export class ProductsModel {
     return products;
   }
 
-  async addProduct(product) {
+  async addProduct(product: Product) {
     const products = await this.getProducts();
     products.push({
       id: `${Math.random() * 100000}`,
@@ -21,14 +29,14 @@ export class ProductsModel {
     await fs.writeFile(fileName, JSON.stringify(products), 'utf-8');
   }
 
-  async getProduct(id) {
+  async getProduct(id: string) {
     const products = await this.getProducts();
-    return products.find((product) => product.id === id);
+    return products.find((product: Product) => product.id === id);
   }
 
-  async editProduct(id, product) {
+  async editProduct(id: string, product: Product) {
     const products = await this.getProducts();
-    const index = products.findIndex((product) => product.id === id);
+    const index = products.findIndex((product: Product) => product.id === id);
     if (index === -1) {
       return false;
     }
@@ -37,9 +45,9 @@ export class ProductsModel {
     return true;
   }
 
-  async deleteProduct(id) {
+  async deleteProduct(id: string) {
     let products = await this.getProducts();
-    products = products.filter((product) => product.id !== id);
+    products = products.filter((product: Product) => product.id !== id);
     await fs.writeFile(fileName, JSON.stringify(products), 'utf-8');
   }
 }

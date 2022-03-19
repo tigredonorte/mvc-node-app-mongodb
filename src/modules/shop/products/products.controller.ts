@@ -1,10 +1,12 @@
-import { ProductsModel } from './products.model.mjs';
+import { Request, Response } from 'express';
+
+import { ProductsModel } from './products.model';
 
 const model = new ProductsModel();
 const views = 'modules/shop/products/views';
 
 export class ProductsController {
-  async list(req, res) {
+  async list(req: Request<any>, res: Response<any>) {
     const products = await model.getProducts();
     res.render(`${views}/index`, {
       docTitle: 'My shop',
@@ -14,7 +16,7 @@ export class ProductsController {
     });
   }
 
-  async show(req, res) {
+  async show(req: Request<any>, res: Response<any>) {
     const product = await model.getProduct(req.params.id);
     if (!product) {
       return res.render('modules/index/views/404', {
@@ -29,7 +31,7 @@ export class ProductsController {
     });
   }
 
-  add(req, res) {
+  add(req: Request<any>, res: Response<any>) {
     res.render(`${views}/add-product`, {
       docTitle: 'Add Products',
       pageName: req.originalUrl,
@@ -37,12 +39,12 @@ export class ProductsController {
     });
   }
 
-  async addPost(req, res) {
+  async addPost(req: Request<any>, res: Response<any>) {
     await model.addProduct(req.body);
     res.redirect('/shop');
   }
 
-  async edit(req, res) {
+  async edit(req: Request<any>, res: Response<any>) {
     const product = await model.getProduct(req.params.id);
     if (!product) {
       return res.end();
@@ -54,12 +56,12 @@ export class ProductsController {
     });
   }
 
-  async editPatch(req, res) {
+  async editPatch(req: Request<any>, res: Response<any>) {
     await model.editProduct(req.params.id, req.body);
     res.redirect('/shop');
   }
 
-  async delete(req, res) {
+  async delete(req: Request<any>, res: Response<any>) {
     await model.deleteProduct(req.params.id);
     res.redirect('/shop');
   }

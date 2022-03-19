@@ -1,23 +1,37 @@
 import fs from 'fs/promises';
-import { ProductsModel } from '../products/products.model.mjs';
+
+import { Product, ProductsModel } from '../products/products.model';
 
 const fileName = 'data/cart.json';
 const productModel = new ProductsModel();
-const initialCart = {
+
+interface CartItem {
+  productId: string;
+  amount: number;
+  subTotal: number;
+  product: Product;
+}
+
+export interface Cart {
+  total: number;
+  products: CartItem[];
+}
+
+const initialCart: Cart = {
   total: 0,
   products: [],
 };
 
 export class CartModel {
-  async get() {
+  async get(): Promise<Cart> {
     const read = await fs.readFile(fileName);
     const cart = JSON.parse(Buffer.concat([read]).toString());
     return !cart.products ? initialCart : cart;
   }
 
-  async increase(productId) {
+  async increase(productId: string) {
     const cart = await this.get();
-    const index = cart.products.findIndex((c) => c.productId === productId);
+    const index = cart.products.findIndex((c: CartItem) => c.productId === productId);
     const product = await productModel.getProduct(productId);
     cart.total = (cart.total || 0) + parseFloat(product.price);
     if (index === -1) {
@@ -37,9 +51,9 @@ export class CartModel {
     await fs.writeFile(fileName, JSON.stringify(cart), 'utf-8');
   }
 
-  async decrease(productId) {
+  async decrease(productId: string) {
     let cart = await this.get();
-    const index = cart.products.findIndex((c) => c.productId === productId);
+    const index = cart.products.findIndex((c: CartItem) => c.productId === productId);
     if (!cart.products[index]) {
       return;
     }
@@ -53,7 +67,7 @@ export class CartModel {
         subTotal: cart.products[index].subTotal - parseFloat(product.price),
       };
     } else {
-      cart.products = cart.products.filter((p) => p.productId !== productId);
+      cart.products = cart.products.filter((p: CartItem) => p.productId !== productId);
     }
     await fs.writeFile(fileName, JSON.stringify(cart), 'utf-8');
   }

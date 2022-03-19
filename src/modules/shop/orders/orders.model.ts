@@ -2,13 +2,17 @@ import fs from 'fs/promises';
 
 const fileName = 'data/orders.json';
 
+export interface Order {
+  id: string;
+}
+
 export class OrdersModel {
   async list() {
     const read = await fs.readFile(fileName);
     return JSON.parse(Buffer.concat([read]).toString());
   }
 
-  async add(order) {
+  async add(order: Order) {
     const orders = await this.list();
     orders.push({
       ...order,
@@ -17,14 +21,14 @@ export class OrdersModel {
     await fs.writeFile(fileName, JSON.stringify(orders), 'utf-8');
   }
 
-  async get(id) {
+  async get(id: string) {
     const orders = await this.list();
-    return orders.find((order) => order.id === id);
+    return orders.find((order: Order) => order.id === id);
   }
 
-  async edit(id, order) {
+  async edit(id: string, order: Order) {
     const orders = await this.list();
-    const index = orders.findIndex((order) => order.id === id);
+    const index = orders.findIndex((order: Order) => order.id === id);
     if (index === -1) {
       return false;
     }
@@ -33,9 +37,9 @@ export class OrdersModel {
     return true;
   }
 
-  async delete(id) {
+  async delete(id: string) {
     let orders = await this.list();
-    orders = orders.filter((order) => order.id !== id);
+    orders = orders.filter((order: Order) => order.id !== id);
     await fs.writeFile(fileName, JSON.stringify(orders), 'utf-8');
   }
 }

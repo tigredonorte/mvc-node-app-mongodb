@@ -4,7 +4,7 @@ import express from 'express';
 import livereload from 'livereload';
 import path from 'path';
 
-import { ShopRoutes } from './src/modules/shop/shop.route.mjs';
+import { ShopRoutes } from './modules/shop/shop.route';
 
 const liveReloadServer = livereload.createServer();
 liveReloadServer.server.once('connection', () => {

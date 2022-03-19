@@ -2,9 +2,9 @@
   "name": "mvc-node-app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.mjs",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "start http://localhost:3000 & nodemon --ext *",
+    "start": "start http://localhost:3000 && ts-node-dev --respawn ./src/index.ts",
     "lint": "./node_modules/.bin/eslint --cache --ext .mjs,js .",
     "lint:fix": "./node_modules/.bin/eslint --cache --fix --ext .mjs,js ."
   },
@@ -26,13 +26,21 @@
     "livereload": "^0.9.3"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.19.2",
+    "@types/connect-livereload": "^0.6.0",
+    "@types/express": "^4.17.13",
+    "@types/livereload": "^0.9.1",
+    "@types/node": "^17.0.21",
     "eslint": "^8.11.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.7",
     "nodemon": "^2.0.15",
-    "prettier": "^2.6.0"
+    "prettier": "^2.6.0",
+    "ts-node": "^10.7.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.6.2"
   },
   "bugs": {
     "url": "https://github.com/tigredonorte/mvc-nodeapp/issues"

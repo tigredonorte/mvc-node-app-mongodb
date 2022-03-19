@@ -1,7 +1,7 @@
 import express from 'express';
-import { CartController } from './cart/cart.controller.mjs';
-import { OrdersController } from './orders/orders.controller.mjs';
-import { ProductsController } from './products/products.controller.mjs';
+import { CartController } from './cart/cart.controller';
+import { OrdersController } from './orders/orders.controller';
+import { ProductsController } from './products/products.controller';
 
 const ShopRoutes = express.Router();
 const productsController = new ProductsController();
