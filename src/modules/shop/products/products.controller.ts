@@ -7,7 +7,7 @@ const views = 'modules/shop/products/views';
 
 export class ProductsController {
   async list(req: Request<any>, res: Response<any>) {
-    const products = await model.getProducts();
+    const products = await model.list();
     res.render(`${views}/index`, {
       docTitle: 'My shop',
       pageName: req.originalUrl,
@@ -17,7 +17,7 @@ export class ProductsController {
   }
 
   async show(req: Request<any>, res: Response<any>) {
-    const product = await model.getProduct(req.params.id);
+    const product = await model.get(req.params.id);
     if (!product) {
       return res.render('modules/index/views/404', {
         docTitle: 'Product not found',
@@ -40,12 +40,15 @@ export class ProductsController {
   }
 
   async addPost(req: Request<any>, res: Response<any>) {
-    await model.addProduct(req.body);
+    const result = await model.add(req.body);
+    if (result === false) {
+      return res.end();
+    }
     res.redirect('/shop');
   }
 
   async edit(req: Request<any>, res: Response<any>) {
-    const product = await model.getProduct(req.params.id);
+    const product = await model.get(req.params.id);
     if (!product) {
       return res.end();
     }
@@ -57,12 +60,18 @@ export class ProductsController {
   }
 
   async editPatch(req: Request<any>, res: Response<any>) {
-    await model.editProduct(req.params.id, req.body);
+    const success = await model.edit(req.params.id, req.body);
+    if (!success) {
+      return res.end();
+    }
     res.redirect('/shop');
   }
 
   async delete(req: Request<any>, res: Response<any>) {
-    await model.deleteProduct(req.params.id);
+    const success = await model.delete(req.params.id);
+    if (!success) {
+      return res.end();
+    }
     res.redirect('/shop');
   }
 }

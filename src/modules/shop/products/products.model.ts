@@ -1,53 +1,78 @@
 import fs from 'fs/promises';
-
-const fileName = 'data/products.json';
+import { Database } from '../../../utils/database';
 
 export interface Product {
   id: string;
   title: string;
   price: number;
   description: string;
-  image: string;
+  img: string;
 }
 
 export class ProductsModel {
-  async getProducts() {
-    const read = await fs.readFile(fileName);
-    const products = JSON.parse(Buffer.concat([read]).toString());
-    return products;
+
+  static readonly table = 'product';
+
+  async list(): Promise<Product[]> {
+    try {
+      const [ matches ] = await Database.db.execute('select * from `product`');
+      return (matches as Product[]);
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
   }
 
-  async addProduct(product: Product) {
-    const products = await this.getProducts();
-    products.push({
-      id: `${Math.random() * 100000}`,
-      title: product.title,
-      price: product.price,
-      description: product.description,
-      image: product.image,
-    });
-    await fs.writeFile(fileName, JSON.stringify(products), 'utf-8');
+  async get(id: string): Promise<Partial<Product>> {
+    try {
+      const [ matches ] = await Database.db.query(
+        'select * from `product` WHERE `product`.`id`= ?',
+        [ id ]
+      );
+      return (matches as Product[])[0];
+    } catch (error) {
+      return {};
+    }
   }
 
-  async getProduct(id: string) {
-    const products = await this.getProducts();
-    return products.find((product: Product) => product.id === id);
-  }
-
-  async editProduct(id: string, product: Product) {
-    const products = await this.getProducts();
-    const index = products.findIndex((product: Product) => product.id === id);
-    if (index === -1) {
+  async add(product: Product): Promise<boolean> {
+    try {
+      const price = parseFloat(product.price.toString()).toFixed(2);
+      await Database.db.query(
+        'INSERT INTO `product` (`id`, `title`, `img`, `price`, `description`) VALUES (?, ?, ?, ?, ?) ',
+        [ null,  product.title, product.img, price, product.description ]
+      );
+      return true;
+    } catch (error) {
+      console.error(error);
       return false;
     }
-    products[index] = { ...product, id };
-    await fs.writeFile(fileName, JSON.stringify(products), 'utf-8');
-    return true;
   }
 
-  async deleteProduct(id: string) {
-    let products = await this.getProducts();
-    products = products.filter((product: Product) => product.id !== id);
-    await fs.writeFile(fileName, JSON.stringify(products), 'utf-8');
+  async edit(id: string, product: Product): Promise<boolean> {
+    try {
+      const price = parseFloat(product.price.toString()).toFixed(2);
+      await Database.db.query(
+        'UPDATE `product` SET `title` = ?, `img` = ?, `price` = ?, `description` = ? WHERE id = ?',
+        [ product.title, product.img, price, product.description, id ]
+      );
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  async delete(id: string): Promise<boolean> {
+    try {
+      await Database.db.query(
+        'DELETE FROM `product` WHERE id = ?',
+        [ id ]
+      );
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   }
 }

@@ -1,74 +1,66 @@
 import fs from 'fs/promises';
+import { ResultSetHeader } from 'mysql2';
+import { Database } from '../../../utils/database';
 
-import { Product, ProductsModel } from '../products/products.model';
-
-const fileName = 'data/cart.json';
-const productModel = new ProductsModel();
+import { ProductsModel } from '../products/products.model';
 
 interface CartItem {
   productId: string;
+  userId: string;
   amount: number;
-  subTotal: number;
-  product: Product;
+  total?: number;
 }
-
-export interface Cart {
-  total: number;
-  products: CartItem[];
-}
-
-const initialCart: Cart = {
-  total: 0,
-  products: [],
-};
 
 export class CartModel {
-  async get(): Promise<Cart> {
-    const read = await fs.readFile(fileName);
-    const cart = JSON.parse(Buffer.concat([read]).toString());
-    return !cart.products ? initialCart : cart;
+
+  static readonly table = 'cart';
+  async getByUserId(userId: string): Promise<CartItem[]> {
+    try {
+      const [ matches ] = await Database.db.execute(
+        `select amount, product.*, product.price * amount as total ` +
+        `from ${CartModel.table} ` +
+        `LEFT JOIN ${ProductsModel.table} ON product.id = cart.productId ` +
+        `WHERE userId = ?`,
+        [ userId ]
+      );
+      return (matches as CartItem[]);
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
   }
 
-  async increase(productId: string) {
-    const cart = await this.get();
-    const index = cart.products.findIndex((c: CartItem) => c.productId === productId);
-    const product = await productModel.getProduct(productId);
-    cart.total = (cart.total || 0) + parseFloat(product.price);
-    if (index === -1) {
-      cart.products.push({
-        productId,
-        product,
-        amount: 1,
-        subTotal: parseFloat(product.price),
-      });
-    } else {
-      cart.products[index] = {
-        ...cart.products[index],
-        amount: +cart.products[index].amount + 1,
-        subTotal: +cart.products[index].subTotal + parseFloat(product.price),
-      };
+  async increase(productId: string, userId: string) {
+    try {
+      await Database.db.query(
+        `INSERT INTO ${CartModel.table} (productId, userId) VALUES (?, ?) ON DUPLICATE KEY UPDATE amount = amount + 1`,
+        [ productId, userId ]
+      );
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
     }
-    await fs.writeFile(fileName, JSON.stringify(cart), 'utf-8');
   }
 
-  async decrease(productId: string) {
-    let cart = await this.get();
-    const index = cart.products.findIndex((c: CartItem) => c.productId === productId);
-    if (!cart.products[index]) {
-      return;
+  async decrease(productId: string, userId: string) {
+    try {
+      const [ res ] = await Database.db.query(
+        `DELETE FROM ${CartModel.table} WHERE productId = ? AND userId = ? AND amount - 1 < 1`,
+        [ productId, userId ]
+      );
+      const results: any = res;
+      if (results.affectedRows > 1) {
+        return true;
+      }
+      await Database.db.query(
+        `UPDATE ${CartModel.table} SET amount = amount - 1 WHERE productId = ? AND userId = ?`,
+        [ productId, userId ]
+      );
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
     }
-
-    const product = await productModel.getProduct(productId);
-    cart.total = cart.total - parseFloat(product.price);
-    if (cart.products[index].amount > 1) {
-      cart.products[index] = {
-        ...cart.products[index],
-        amount: cart.products[index].amount - 1,
-        subTotal: cart.products[index].subTotal - parseFloat(product.price),
-      };
-    } else {
-      cart.products = cart.products.filter((p: CartItem) => p.productId !== productId);
-    }
-    await fs.writeFile(fileName, JSON.stringify(cart), 'utf-8');
   }
 }

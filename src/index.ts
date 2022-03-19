@@ -3,6 +3,7 @@ import connectLiveReload from 'connect-livereload';
 import express from 'express';
 import livereload from 'livereload';
 import path from 'path';
+require('dotenv').config();
 
 import { ShopRoutes } from './modules/shop/shop.route';
 
