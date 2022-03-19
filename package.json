@@ -40,12 +40,12 @@
   "homepage": "https://github.com/tigredonorte/mvc-nodeapp#readme",
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged-pre-commit"
     }
   },
-  "lint-staged": {
+  "lint-staged-pre-commit": {
     "**/*.{mjs,js,jsx,ts,tsx}": [
-      "npm run lint:fix"
+      "npm run lint"
     ]
   }
 }

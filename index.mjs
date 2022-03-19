@@ -2,6 +2,7 @@ import bodyParser from 'body-parser';
 import connectLiveReload from 'connect-livereload';
 import express from 'express';
 import livereload from 'livereload';
+import path from 'path';
 
 import { ShopRoutes } from './src/modules/shop/shop.route.mjs';
 
@@ -17,6 +18,7 @@ app.locals = { templateFolder: process.cwd() + '/src/template' };
 app.set('view engine', 'ejs');
 app.set('views', './src/');
 
+app.use(express.static(path.join('public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(connectLiveReload());
 

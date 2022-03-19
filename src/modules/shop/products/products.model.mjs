@@ -6,7 +6,6 @@ export class ProductsModel {
   async getProducts() {
     const read = await fs.readFile(fileName);
     const products = JSON.parse(Buffer.concat([read]).toString());
-    console.log('ssssssssss');
     return products;
   }
 
