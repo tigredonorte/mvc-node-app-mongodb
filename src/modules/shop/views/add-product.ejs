@@ -1,24 +1,29 @@
 <%- include ("../../../template/main") %>
 
   <main>
-    <form class="col-md-5 p-lg-5 mx-auto my-5" method="post" action="/shop/add-product">
+    <form class="col-md-5 p-lg-5 mx-auto my-5" method="POST"
+      action="/shop/<%- product.id ? `edit/${product.id}` : 'add-product' -%>">
       <div class="mb-3">
         <label class="form-label" for="title">Product name</label>
-        <input class="form-control" type="text" placeholder="Product name" name="title" />
+        <input class="form-control" type="text" placeholder="Product name" name="title" value="<%- product.title -%>" />
       </div>
       <div class="mb-3">
         <label class="form-label" for="price">Price</label>
-        <input class="form-control" type="number" min=".01" step="any" placeholder="Price" name="price" />
+        <input class="form-control" type="number" min=".01" step="any" placeholder="Price" name="price"
+          value="<%- product.price -%>" />
       </div>
       <div class="mb-3">
         <label class="form-label" for="description">Description</label>
-        <textarea class="form-control" name="description" cols="30" rows="8" placeholder="Description"></textarea>
+        <textarea class="form-control" name="description" cols="30" rows="8"
+          placeholder="Description"><%- product.description -%></textarea>
       </div>
       <div class="mb-3">
         <label class="form-label" for="image">Image</label>
-        <input class="form-control" type="url" placeholder="image" name="image" />
+        <input class="form-control" type="url" placeholder="image" name="image" value="<%- product.image -%>" />
       </div>
-      <button class="btn btn-primary start-50" type="submit">Create Product</button>
+      <button class="btn btn-primary start-50" type="submit">
+        <%- product.id ? "Edit Product" : "Create Product" -%>
+      </button>
     </form>
   </main>
 

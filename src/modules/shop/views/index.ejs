@@ -3,14 +3,18 @@
 <main>
   <% if(hasProducts) { %>
     <div class="container row">
-      <% products.forEach((product) => { %>
+      <% products.forEach((product, index) => { %>
         <article class="col-4" style="padding: 5px;">
           <div class="card"><img class="card-img-top" src="<%- product.image %>" />
             <div class="card-body">
               <h2 class="card-subtitle text-muted mb-2"><%- product.title %></h2>
               <h1 class="card-title">R$ <%- product.price %></h1>
               <p class="card-tex"><%- product.description %></p>
-              <div class="mb-2"><button class="btn btn-primary start-50">Add to cart</button></div>
+              <div class="row">
+                <div class="mb-2"><a class="btn btn-primary start-50">Add to cart</a></div>
+                <div class="mb-2"><a class="btn btn-primary start-50" href="/shop/edit/<%- product.id %>">Edit</a></div>
+                <div class="mb-2"><a class="btn btn-primary start-50" href="/shop/delete/<%- product.id %>">Delete</a></div>
+              </div>
             </div>
           </div>
         </article>
