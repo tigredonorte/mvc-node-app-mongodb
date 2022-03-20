@@ -1,14 +1,17 @@
-import mysql from 'mysql2';
+import { Sequelize } from '@sequelize/core';
+
+require('dotenv').config();
 
 export class Database {
-  static db = mysql
-    .createPool({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      database: process.env.DB_DATABASE,
-      password: process.env.DB_PASSWORD,
-    })
-    .promise();
+  static db = new Sequelize(process.env.DB_DATABASE || '', process.env.DB_USER || '', process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
+    dialect: 'mysql',
+    pool: {
+      min: 0,
+      max: !!process.env.DB_POOL ? parseInt(process.env.DB_POOL) : 5,
+    },
+    logging: false,
+  });
 
   static instance: Database;
   private constructor() {}

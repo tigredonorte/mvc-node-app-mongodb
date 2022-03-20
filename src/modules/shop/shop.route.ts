@@ -21,6 +21,7 @@ ShopRoutes.get('/product/:id', productsController.show);
 ShopRoutes.get('/cart', cartController.list);
 ShopRoutes.post('/cart/increase', cartController.increase);
 ShopRoutes.post('/cart/decrease', cartController.decrease);
+ShopRoutes.post('/cart/delete', cartController.delete);
 
 // orders
 ShopRoutes.get('/orders', ordersController.list);

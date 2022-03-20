@@ -32,4 +32,12 @@ export class CartController {
     }
     res.redirect('/shop/cart');
   }
+
+  async delete(req: Request<any>, res: Response<any>) {
+    const result = await model.drop(req.body.productId, userId);
+    if (!result) {
+      res.end();
+    }
+    res.redirect('/shop/cart');
+  }
 }

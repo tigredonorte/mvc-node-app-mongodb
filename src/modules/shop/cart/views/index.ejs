@@ -16,33 +16,36 @@
                       <h6 class="mb-0 text-muted"><%- cart.length %> items</h6>
                     </div>
                     <hr class="my-4" />
-                    <% cart.forEach(p => { %>
+                    <% cart.forEach(c => { %>
                     <article class="row mb-4 d-flex justify-content-between align-items-center">
                       <div class="col-md-2 col-lg-2 col-xl-2">
-                        <img src="<%- p.img  %>" class="img-fluid rounded-3" alt="Cotton T-shirt" />
+                        <img src="<%- c.Product.img  %>" class="img-fluid rounded-3" alt="Cotton T-shirt" />
                       </div>
                       <div class="col-md-3 col-lg-3 col-xl-3">
-                        <h6 class="text-muted"><%- p.title %></h6>
-                        <h6 class="text-black mb-0"><%- p.description %></h6>
+                        <h6 class="text-muted"><%- c.Product.title %></h6>
+                        <h6 class="text-black mb-0"><%- c.Product.description %></h6>
                       </div>
                       <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
                         <form method="POST" action="/shop/cart/decrease">
                           <button class="btn btn-link px-2"> <i class="fas fa-minus"></i></button>
-                          <input type="hidden" name="productId" value="<%- p.id %>" />
+                          <input type="hidden" name="productId" value="<%- c.Product.id %>" />
                         </form>
 
-                        <input id="form1" min="0" disabled name="quantity" value="<%- p.amount %>" type="number" class="form-control form-control-sm" />
+                        <input id="form1" min="0" disabled name="quantity" value="<%- c.amount %>" type="number" class="form-control form-control-sm" />
 
                         <form method="POST" action="/shop/cart/increase">
                           <button class="btn btn-link px-2"> <i class="fas fa-plus"></i></button>
-                          <input type="hidden" name="productId" value="<%- p.id %>" />
+                          <input type="hidden" name="productId" value="<%- c.Product.id %>" />
                         </form>
                       </div>
                       <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                        <h6 class="mb-0">R$ <%- p.total %></h6>
+                        <h6 class="mb-0">R$ <%- c.total %></h6>
                       </div>
                       <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                        <a href="#!" class="text-muted"><i class="fas fa-times"></i></a>
+                        <form method="POST" action="/shop/cart/delete">
+                          <button class="btn btn-link px-2"> <i class="fas fa-plus"></i></button>
+                          <input type="hidden" name="productId" value="<%- c.Product.id %>" />
+                        </form>
                       </div>
                     </article>
 
@@ -72,15 +75,6 @@
                       <select class="select">
                         <option value="1">Standard-Delivery- R$ 15.00</option>
                       </select>
-                    </div>
-
-                    <h5 class="text-uppercase mb-3">Give code</h5>
-
-                    <div class="mb-5">
-                      <div class="form-outline">
-                        <input type="text" id="form3Examplea2" class="form-control form-control-lg" />
-                        <label class="form-label" for="form3Examplea2">Enter your code</label>
-                      </div>
                     </div>
 
                     <hr class="my-4" />

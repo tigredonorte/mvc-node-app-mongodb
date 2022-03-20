@@ -6,7 +6,8 @@
   "scripts": {
     "start": "start http://localhost:3000 && ts-node-dev --respawn ./src/index.ts",
     "lint": "./node_modules/.bin/eslint --cache --ext .mjs,js,ts .",
-    "lint:fix": "./node_modules/.bin/eslint --cache --fix --ext .mjs,js,ts ."
+    "lint:fix": "./node_modules/.bin/eslint --cache --fix --ext .mjs,js,ts .",
+    "preinstall": "npx only-allow pnpm"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,7 @@
     "mvc"
   ],
   "dependencies": {
+    "@sequelize/core": "^7.0.0-alpha.10",
     "body-parser": "^1.19.2",
     "connect-livereload": "^0.6.1",
     "dotenv": "^16.0.0",
@@ -48,9 +50,12 @@
     "url": "https://github.com/tigredonorte/mvc-nodeapp/issues"
   },
   "homepage": "https://github.com/tigredonorte/mvc-nodeapp#readme",
+  "engines": {
+    "npm": "please-use-pnpm",
+    "pnpm": ">= 6.32.3"
+  },
   "husky": {
-    "hooks": {
-    }
+    "hooks": {}
   },
   "lint-staged-pre-commit": {
     "**/*.{mjs,js,jsx,ts,tsx}": [

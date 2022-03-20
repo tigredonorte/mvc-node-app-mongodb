@@ -3,9 +3,16 @@ import connectLiveReload from 'connect-livereload';
 import express from 'express';
 import livereload from 'livereload';
 import path from 'path';
-require('dotenv').config();
 
 import { ShopRoutes } from './modules/shop/shop.route';
+import { Database } from './utils/database';
+
+require('dotenv').config();
+
+const dbSync = false;
+if (dbSync) {
+  Database.db.sync({ alter: true }).catch(err => console.error(err));
+}
 
 const liveReloadServer = livereload.createServer();
 liveReloadServer.server.once('connection', () => {
