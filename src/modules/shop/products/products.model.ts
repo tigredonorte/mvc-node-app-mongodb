@@ -58,9 +58,10 @@ export class ProductsModel {
 
   static readonly table = 'product';
 
-  async list(): Promise<Product[]> {
+  async list(author?: number): Promise<Product[]> {
     try {
-      return await Product.findAll();
+      const where = author ? { where: { author }} : {};
+      return await Product.findAll(where);
     } catch (error) {
       console.error(error);
       return [];

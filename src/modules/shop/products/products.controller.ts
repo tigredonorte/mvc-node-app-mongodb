@@ -7,7 +7,8 @@ const views = 'modules/shop/products/views';
 
 export class ProductsController {
   async list(req: Request<any>, res: Response<any>) {
-    const products = await model.list();
+    const id = req.baseUrl.match('admin') ? req.user.id : undefined;
+    const products = await model.list(id);
     res.render(`${views}/index`, {
       docTitle: 'My shop',
       pageName: req.originalUrl,

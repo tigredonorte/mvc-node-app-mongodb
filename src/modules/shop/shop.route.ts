@@ -10,11 +10,6 @@ const cartController = new CartController();
 
 // products
 ShopRoutes.get('/', productsController.list);
-ShopRoutes.get('/product/add', productsController.add);
-ShopRoutes.post('/product/add', productsController.addPost);
-ShopRoutes.get('/product/edit/:id', productsController.edit);
-ShopRoutes.post('/product/edit/:id', productsController.editPatch);
-ShopRoutes.get('/product/delete/:id', productsController.delete);
 ShopRoutes.get('/product/:id', productsController.show);
 
 // cart

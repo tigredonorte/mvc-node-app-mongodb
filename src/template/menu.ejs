@@ -7,10 +7,15 @@
 
   if (!user) {
     pages.push({ title: 'Login' , link: '/auth' });
+    adminPages.push({ title: 'Orders' , link: '/shop/orders' });
   } else {
-    pages.push({ title: 'Add Product' , link: '/shop/product/add' }),
-    pages.push({ title: 'Orders' , link: '/shop/orders' });
     pages.push({ title: 'Logout' , link: '/auth/logout' });
+  }
+
+  adminPages = [];
+  if (user) {
+    adminPages.push({ title: 'My products' , link: '/admin/shop/' });
+    adminPages.push({ title: 'Add Product' , link: '/admin/shop/product/add' });
   }
 %>
 </head>
@@ -30,6 +35,19 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <% pages.forEach((page)=> { isActive = curPage === page.link; %>
+            <li class="nav-item">
+              <a
+                class="nav-link <%= isActive ? 'active' : '' %>"
+                <%= isActive ? 'aria-current="page"' : '' %>
+                href="<%- isActive ? '#' : page.link %>"
+              >
+                <%- page.title %>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+        <ul class="navbar-nav">
+          <% adminPages.forEach((page)=> { isActive = curPage === page.link; %>
             <li class="nav-item">
               <a
                 class="nav-link <%= isActive ? 'active' : '' %>"
