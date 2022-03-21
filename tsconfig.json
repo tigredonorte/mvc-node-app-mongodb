@@ -8,17 +8,14 @@
     "strict": true,
     "rootDir": "./src",
     "outDir": "./dist",
-    "baseUrl": ".",
     "types": [ "node" ],
-    "typeRoots": ["./src/types"],
-    "paths": {
-      "~*": [
-        "./src/*"
-      ],
-      "@env": [
-        ".env",
-      ]
-    },
+    "typeRoots": [
+      "./src/types",
+      "./node_modules/@types"
+    ],
+  },
+  "ts-node": {
+    "swc": true
   },
   "exclude": ["./node_modules"]
 }

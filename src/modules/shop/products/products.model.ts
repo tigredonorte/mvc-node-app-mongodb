@@ -1,6 +1,7 @@
 import { DataTypes, Model } from '@sequelize/core';
 
 import { Database } from '../../../utils/database';
+import { User } from '../../user/user/user.model';
 
 interface IProduct {
   id: string;
@@ -40,13 +41,18 @@ Product.init({
     type: new DataTypes.STRING(64),
     allowNull: false,
   },
+  author: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: false,
+  }
 },
-  {
+{
     tableName: "product",
     sequelize: Database.db, // passing the `sequelize` instance is required
   }
 );
 
+Product.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
 
 export class ProductsModel {
 

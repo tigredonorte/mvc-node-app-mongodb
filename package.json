@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "start http://localhost:3000 && ts-node-dev --respawn ./src/index.ts",
+    "start": "start http://localhost:3000 && nodemon ./src/index.ts",
     "lint": "./node_modules/.bin/eslint --cache --ext .mjs,js,ts .",
     "lint:fix": "./node_modules/.bin/eslint --cache --fix --ext .mjs,js,ts .",
     "preinstall": "npx only-allow pnpm"
@@ -21,18 +21,26 @@
   ],
   "dependencies": {
     "@sequelize/core": "^7.0.0-alpha.10",
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.2",
     "connect-livereload": "^0.6.1",
     "dotenv": "^16.0.0",
     "ejs": "^3.1.6",
     "express": "^4.17.3",
+    "express-session": "^1.17.2",
+    "jsonwebtoken": "^8.5.1",
     "livereload": "^0.9.3",
     "mysql2": "^2.3.3"
   },
   "devDependencies": {
+    "@swc/core": "^1.2.159",
+    "@swc/helpers": "^0.3.8",
+    "@types/bcrypt": "^5.0.0",
     "@types/body-parser": "^1.19.2",
     "@types/connect-livereload": "^0.6.0",
     "@types/express": "^4.17.13",
+    "@types/express-session": "^1.17.4",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/livereload": "^0.9.1",
     "@types/node": "^17.0.21",
     "eslint": "^8.11.0",
@@ -40,8 +48,10 @@
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.7",
+    "node-dev": "^7.2.0",
     "nodemon": "^2.0.15",
     "prettier": "^2.6.0",
+    "regenerator-runtime": "^0.13.9",
     "ts-node": "^10.7.0",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.6.2"

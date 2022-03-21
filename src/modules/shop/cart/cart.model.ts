@@ -1,6 +1,7 @@
 import { DataTypes, Model, Sequelize } from '@sequelize/core';
 
 import { Database } from '../../../utils/database';
+import { User } from '../../user/user/user.model';
 import { Product } from '../products/products.model';
 
 interface ICartItem {
@@ -23,7 +24,7 @@ CartItem.init(
       primaryKey: true,
     },
     userId: {
-      type: new DataTypes.INTEGER(),
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       primaryKey: true,
     },
@@ -39,11 +40,12 @@ CartItem.init(
   }
 );
 
-CartItem.belongsTo(Product, { foreignKey: 'productId' });
+CartItem.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+CartItem.belongsTo(Product, { foreignKey: 'productId', onDelete: 'CASCADE' });
 
 export class CartModel {
   static readonly table = 'cart';
-  async getByUserId(userId: string): Promise<ICartItem[]> {
+  async getByUserId(userId: number): Promise<ICartItem[]> {
     try {
       const items = await CartItem.findAll({
         where: { userId },
@@ -63,7 +65,7 @@ export class CartModel {
     }
   }
 
-  async increase(productId: string, userId: string) {
+  async increase(productId: string, userId: number) {
     try {
       const res: any = await CartItem.increment({ amount: 1 }, { where: { productId, userId } });
       if (res[0][1]) {
@@ -80,7 +82,7 @@ export class CartModel {
     }
   }
 
-  async decrease(productId: string, userId: string) {
+  async decrease(productId: string, userId: number) {
     try {
       const res = await CartItem.destroy({
         where: {
@@ -98,7 +100,7 @@ export class CartModel {
     }
   }
 
-  async drop(productId: string, userId: string) {
+  async drop(productId: string, userId: number) {
     try {
       const res = await CartItem.destroy({ where: { productId, userId } });
       return res ? true : false;

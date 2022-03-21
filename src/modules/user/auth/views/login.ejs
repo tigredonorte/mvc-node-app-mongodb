@@ -1,0 +1,21 @@
+<%- include ("../../../../template/main") %> <%- include ("../../../../template/menu") %>
+
+<main class="card">
+  <form class="col-md-5 p-lg-5 mx-auto my-5" method="POST" action="/auth/login">
+    <div class="mb-3">
+      <label class="form-label" for="title">Email</label>
+      <input class="form-control" type="email" placeholder="Your best email" name="email" />
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="price">Password</label>
+      <input class="form-control" type="password" placeholder="Password" name="password" />
+    </div>
+    <button class="btn btn-primary start-50" type="submit">Login</button>
+  </form>
+
+  <div class="mb-12">
+    <a class="btn btn-secondary start-50 mb-3" href="/auth/signup"> Signup </a>
+  </div>
+</main>
+
+<%- include ("../../../../template/footer") %>
