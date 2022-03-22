@@ -39,13 +39,4 @@ app.use('/shop', ShopRoutes);
 app.get('/', (req, res) => res.redirect('/shop'));
 app.use((req, res) => res.render('modules/index/views/404', { docTitle: 'Page not found' }));
 
-if (process.env.ENV_STAGE !== 'local') {
-  Database.db
-    .sync({ alter: true })
-    .then(() => {
-      app.listen('3000', () => console.log('\nRunning on port 3000\n'));
-    })
-    .catch((err) => console.error(err));
-} else {
-  app.listen('3000', () => console.log('\nRunning on port 3000\n'));
-}
+Database.init(() => app.listen('3000', () => console.log('\nRunning on port 3000\n')));

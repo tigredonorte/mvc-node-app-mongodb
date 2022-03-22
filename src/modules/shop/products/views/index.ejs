@@ -12,15 +12,23 @@
           <h1 class="card-title">R$ <%- product.price %></h1>
           <p class="card-tex"><%- product.description %></p>
           <div class="row">
+            <% if (isAdmin) {%>
+            <div class="btn-group">
+              <a class="btn btn-dark" style="margin: 5px" href="/admin/shop/product/edit/<%- product._id %>">Edit</a>
+              <a class="btn btn-dark" style="margin: 5px" href="/admin/shop/product/delete/<%- product._id %>">Delete</a>
+            </div>
+            <% } else { %>
             <div style="margin-bottom: 5px" class="col-12">
-              <a class="btn btn-primary col-12" href="/shop/product/<%- product.id %>">Details</a>
+              <a class="btn btn-primary col-12" href="/shop/product/<%- product._id %>">Details</a>
             </div>
             <div style="margin-bottom: 5px" class="col-12">
               <form method="POST" action="/shop/cart/increase">
                 <button class="btn btn-primary col-12">Add to cart</button>
-                <input type="hidden" name="productId" value="<%- product.id %>" />
+                <input type="hidden" name="productId" value="<%- product._id %>" />
               </form>
             </div>
+
+            <% } %>
           </div>
         </div>
       </div>

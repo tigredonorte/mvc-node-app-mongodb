@@ -1,69 +1,26 @@
-import { DataTypes, Model } from '@sequelize/core';
-import { Database } from '../../../utils/database';
 import bcrypt from 'bcrypt';
+import { Database } from '../../../utils/database';
 import { Token } from '../../../utils/token';
 
 export interface IUser {
-  id?: number;
   email: string;
   password: string;
   name: string;
 }
-
-export class User extends Model implements IUser {
-  declare id: number;
-  declare email: string;
-  declare password: string;
-  declare name: string;
-}
-
-User.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      allowNull: false,
-      primaryKey: true,
-    },
-    email: {
-      type: new DataTypes.STRING(64),
-      allowNull: false,
-    },
-    password: {
-      type: new DataTypes.STRING(200),
-      allowNull: false,
-    },
-    name: {
-      type: new DataTypes.STRING(64),
-      allowNull: false,
-    },
-  },
-  {
-    tableName: 'User',
-    sequelize: Database.db, // passing the `sequelize` instance is required
-    timestamps: true,
-    indexes: [
-      { unique:true, fields: ['email'] }
-    ]
-  }
-);
-
 export class UsersModel {
-  static readonly table = 'User';
 
-  async list(): Promise<User[]> {
+  async list(): Promise<IUser[]> {
     try {
-      return await User.findAll();
+      return [];
     } catch (error) {
       console.error(error);
       return [];
     }
   }
 
-  async get(id: string): Promise<Partial<User>> {
+  async get(id: string): Promise<Partial<IUser>> {
     try {
-      const user = await User.findByPk(id);
-      return user || {};
+      return {};
     } catch (error) {
       return {};
     }
@@ -71,7 +28,6 @@ export class UsersModel {
 
   async add(user: IUser): Promise<boolean> {
     try {
-      await User.create({ ...user });
       return true;
     } catch (error) {
       console.error(error);
@@ -81,7 +37,6 @@ export class UsersModel {
 
   async edit(id: string, user: IUser): Promise<boolean> {
     try {
-      await User.update({ ...user }, { where: { id } });
       return true;
     } catch (error) {
       console.error(error);
@@ -91,7 +46,6 @@ export class UsersModel {
 
   async delete(id: string): Promise<boolean> {
     try {
-      await User.destroy({ where: { id } });
       return true;
     } catch (error) {
       console.error(error);
@@ -101,7 +55,7 @@ export class UsersModel {
 
   async login(user: { email: string; password: string }): Promise<false | string> {
     try {
-      const foundUser = await User.findOne({ where: { email: user.email } });
+      const foundUser = await this.db().findOne({ email: user.email });
       if (!foundUser) {
         return false;
       }
@@ -110,7 +64,7 @@ export class UsersModel {
         return false;
       }
       return Token.sign({
-        id: foundUser.id,
+        _id: foundUser._id.toString(),
         email: foundUser.email,
         name: foundUser.name,
       }, '1h');
@@ -124,7 +78,7 @@ export class UsersModel {
     try {
       const salt = await bcrypt.genSalt(10);
       const hash = await bcrypt.hash(user.password, salt);
-      await User.create({
+      this.db().insertOne({
         ...user,
         password: hash,
       });
@@ -134,4 +88,6 @@ export class UsersModel {
       return false;
     }
   }
+
+  db = () => Database.db.collection('users');
 }

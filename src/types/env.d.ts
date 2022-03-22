@@ -4,4 +4,5 @@ declare module 'process' {
     export const DB_PASSWORD: string;
     export const DB_HOST: string;
     export const DB_POOL: string;
+    export const MONGO_URL: string;
 }

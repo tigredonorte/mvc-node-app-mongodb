@@ -1,19 +1,21 @@
-import { Sequelize } from '@sequelize/core';
+import { Db, MongoClient, ServerApiVersion } from 'mongodb';
 
 require('dotenv').config();
 
 export class Database {
-  static db = new Sequelize(process.env.DB_DATABASE || '', process.env.DB_USER || '', process.env.DB_PASSWORD, {
-    host: process.env.DB_HOST,
-    dialect: 'mysql',
-    pool: {
-      min: 0,
-      max: !!process.env.DB_POOL ? parseInt(process.env.DB_POOL) : 5,
-    },
-    logging: false,
-  });
+  static db: Db;
 
   static instance: Database;
+  static init(callback: () => void) {
+    console.log(process.env.MONGO_URL);
+    const client = new MongoClient(process.env.MONGO_URL || '', {
+      serverApi: ServerApiVersion.v1,
+    });
+    client.connect(() => {
+      Database.db = client.db();
+      callback();
+    });
+  }
   private constructor() {}
 
   static getInstance() {

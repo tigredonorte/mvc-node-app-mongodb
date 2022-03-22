@@ -6,18 +6,18 @@ const views = 'modules/shop/cart/views/';
 
 export class CartController {
   async list(req: Request, res: Response<any>) {
-    const cart = await model.getByUserId(req.user.id);
-    const cartList = cart.map(it => it.get({ plain: true }));
+    const userCart = await model.getByUserId(req.user._id);
+    console.log(Object.values(userCart.products));
     res.render(`${views}index`, {
       docTitle: 'My Chart',
       pageName: req.originalUrl,
-      total: cartList.reduce((acc, it) => acc + (it.total ? it.total : 0), 0),
-      cart: cartList,
+      total: userCart?.total || 0,
+      cart: Object.values(userCart.products),
     });
   }
 
   async increase(req: Request, res: Response<any>) {
-    const result = await model.increase(req.body.productId, req.user.id);
+    const result = await model.increase(req.body.productId, req.user._id);
     if (!result) {
       return res.end();
     }
@@ -25,7 +25,7 @@ export class CartController {
   }
 
   async decrease(req: Request<any>, res: Response<any>) {
-    const result = await model.decrease(req.body.productId, req.user.id);
+    const result = await model.decrease(req.body.productId, req.user._id);
     if (!result) {
       return res.end();
     }
@@ -33,7 +33,7 @@ export class CartController {
   }
 
   async delete(req: Request<any>, res: Response<any>) {
-    const result = await model.drop(req.body.productId, req.user.id);
+    const result = await model.drop(req.body.productId, req.user._id);
     if (!result) {
       return res.end();
     }

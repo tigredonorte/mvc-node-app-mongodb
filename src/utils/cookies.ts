@@ -1,9 +1,11 @@
 import { Request } from 'express';
 
-export function parseCookies(request: Request<any>) {
-  const list: { [s: string]: string } = {};
+export function parseCookies(request: Request<any>): Record<string, string> & { token: string; } {
+  const list: Record<string, string> & { token: string; } = { token: '' };
   const cookieHeader = request.headers?.cookie;
-  if (!cookieHeader) return list;
+  if (!cookieHeader) {
+    return list;
+  }
 
   cookieHeader.split(`;`).forEach(function (cookie) {
     let [name, ...rest] = cookie.split(`=`);

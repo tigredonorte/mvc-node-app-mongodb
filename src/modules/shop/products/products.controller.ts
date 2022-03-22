@@ -7,9 +7,10 @@ const views = 'modules/shop/products/views';
 
 export class ProductsController {
   async list(req: Request<any>, res: Response<any>) {
-    const id = req.baseUrl.match('admin') ? req.user.id : undefined;
+    const id = req.baseUrl.match('admin') ? req.user._id : undefined;
     const products = await model.list(id);
     res.render(`${views}/index`, {
+      isAdmin: !!id,
       docTitle: 'My shop',
       pageName: req.originalUrl,
       products,
@@ -41,7 +42,7 @@ export class ProductsController {
   }
 
   async addPost(req: Request<any>, res: Response<any>) {
-    const result = await model.add({ ...req.body, author: req.user.id });
+    const result = await model.add({ ...req.body, author: req.user._id });
     if (result === false) {
       return res.end();
     }
@@ -50,6 +51,7 @@ export class ProductsController {
 
   async edit(req: Request<any>, res: Response<any>) {
     const product = await model.get(req.params.id);
+    console.log(product);
     if (!product) {
       return res.end();
     }

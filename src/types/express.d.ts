@@ -1,11 +1,12 @@
-import { UsersModel } from '../modules/user/user/user.model';
+import { IUser } from '../modules/user/user/user.model';
 
-// /src/types/types.express.d.ts
-declare namespace Express {
-  export interface Request {
-    user: UsersModel;
-    _cookies: {
-      token: string;
-    };
+declare global{
+  namespace Express {
+      interface Request {
+        user: IUser & { _id: string; };
+        _cookies: Record<string, string> & {
+          token: string;
+        };
+      }
   }
 }

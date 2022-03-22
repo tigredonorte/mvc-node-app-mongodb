@@ -1,112 +1,139 @@
-import { DataTypes, Model, Sequelize } from '@sequelize/core';
-
+import { ObjectId } from 'mongodb';
 import { Database } from '../../../utils/database';
-import { User } from '../../user/user/user.model';
-import { Product } from '../products/products.model';
+import { ProductsModel } from '../products/products.model';
 
-interface ICartItem {
+export interface ICart {
+  _id: any;
+  total: number;
+  products: Record<string, ICartItem>;
+}
+
+export interface ICartItem {
   productId: string;
-  userId: string;
+  productName: string;
   amount: number;
-  total?: number;
+  total: number;
 }
-
-export class CartItem extends Model implements ICartItem {
-  declare productId: string;
-  declare userId: string;
-  declare amount: number;
-  declare total?: number;
-}
-
-CartItem.init(
-  {
-    productId: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      primaryKey: true,
-    },
-    userId: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      primaryKey: true,
-    },
-    amount: {
-      type: new DataTypes.INTEGER(),
-      allowNull: false,
-      defaultValue: 0,
-    },
-  },
-  {
-    tableName: 'cart',
-    sequelize: Database.db, // passing the `sequelize` instance is required
-  }
-);
-
-CartItem.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
-CartItem.belongsTo(Product, { foreignKey: 'productId', onDelete: 'CASCADE' });
 
 export class CartModel {
-  static readonly table = 'cart';
-  async getByUserId(userId: number): Promise<CartItem[]> {
-    try {
-      const items = await CartItem.findAll({
-        where: { userId },
-        include: [
-          {
-            model: Product,
-            attributes: ['id', 'title', 'description', 'price', 'img'],
-          },
-        ],
-        attributes: ['amount', [Sequelize.literal('amount * price'), 'total']],
-      });
+  productModel = new ProductsModel();
+  emptyCart: ICart = { total: 0, _id: '', products: {} };
 
-      return items;
+  getId = (userId: string) => ({ _id: new ObjectId(userId) });
+
+  async clearCart(userId: string): Promise<boolean> {
+    try {
+      if (!userId) {
+        throw new Error('You must inform the user Id');
+      }
+      await this.db().deleteOne(this.getId(userId));
+      return true;
     } catch (error) {
       console.error(error);
-      return [];
+      return false;
     }
   }
 
-  async increase(productId: string, userId: number) {
+  async getByUserId(userId: string): Promise<ICart> {
     try {
-      const res: any = await CartItem.increment({ amount: 1 }, { where: { productId, userId } });
-      if (res[0][1]) {
+      const cart = (await this.db().findOne(this.getId(userId))) as unknown as ICart;
+      if (cart) {
+        return cart;
+      }
+      await this.db().insertOne({
+        _id: new ObjectId(userId),
+        total: 0,
+        products: {},
+      });
+      return (await this.db().findOne(this.getId(userId))) as unknown as ICart;
+    } catch (error) {
+      console.error(error);
+      return this.emptyCart;
+    }
+  }
+
+  async increase(productId: string, userId: string): Promise<boolean> {
+    try {
+      const product = await this.productModel.get(productId);
+      const cart = await this.getByUserId(userId);
+      if (!cart.products[productId]) {
+        await this.db().updateOne(
+          { _id: new ObjectId(userId) },
+          {
+            $inc: {
+              total: product.price,
+            },
+            $set: {
+              [`products.${productId}.product`]: product,
+              [`products.${productId}.amount`]: 1,
+              [`products.${productId}.total`]: product.price,
+            },
+          }
+        );
         return true;
       }
-      await CartItem.upsert({
-        productId,
-        userId,
-        amount: Sequelize.literal('amount + 1'),
-      });
+
+      await this.db().updateOne(
+        { _id: new ObjectId(userId) },
+        {
+          $inc: {
+            total: product.price,
+            [`products.${productId}.amount`]: 1,
+            [`products.${productId}.total`]: product.price,
+          },
+        }
+      );
       return true;
     } catch (error) {
+      console.error(error);
       return false;
     }
   }
 
-  async decrease(productId: string, userId: number) {
+  async decrease(productId: string, userId: string): Promise<boolean> {
     try {
-      const res = await CartItem.destroy({
-        where: {
-          productId,
-          userId,
-          amount: Sequelize.literal(`amount - 1 < 1`),
-        },
-      });
-      if (!res) {
-        await CartItem.decrement({ amount: 1 }, { where: { productId, userId } });
+      const product = await this.productModel.get(productId);
+      const cart = await this.getByUserId(userId);
+      if (cart.products[productId].amount === 1) {
+        console.log(productId);
+        await this.db().updateOne(
+          { _id: new ObjectId(userId) },
+          {
+            $inc: {
+              total: -product.price,
+            },
+            $unset: {
+              [`products.${productId}`]: '',
+            },
+          }
+        );
+        return true;
       }
+
+      await this.db().updateOne(
+        { _id: new ObjectId(userId) },
+        {
+          $inc: {
+            total: -product.price,
+            [`products.${productId}.amount`]: -1,
+            [`products.${productId}.total`]: -product.price,
+          },
+        }
+      );
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  async drop(productId: string, userId: string): Promise<boolean> {
+    try {
       return true;
     } catch (error) {
       return false;
     }
   }
 
-  async drop(productId: string, userId: number) {
-    try {
-      const res = await CartItem.destroy({ where: { productId, userId } });
-      return res ? true : false;
-    } catch (error) {
-      return false;
-    }
-  }
+  db = () => Database.db.collection('cart');
 }

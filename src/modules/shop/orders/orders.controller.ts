@@ -7,7 +7,7 @@ const views = 'modules/shop/orders/views/';
 
 export class OrdersController {
   async list(req: Request<any>, res: Response<any>) {
-    const orders = await req.user.getOrders({ include: ['Products'] });
+    const orders = (await model.list(req.user._id)).map(order => ({...order, products: Object.values(order.products)}));
     console.log(orders);
     res.render(`${views}index`, {
       docTitle: 'My Orders',
@@ -18,7 +18,7 @@ export class OrdersController {
   }
 
   async add(req: Request, res: Response<any>) {
-    const result = await model.add(req.user);
+    const result = await model.add(req.user._id);
     if (!result) {
       return res.end();
     }

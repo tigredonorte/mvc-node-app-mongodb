@@ -3,12 +3,6 @@
 <%- include ("../../../../template/menu") %>
 
 <main class="container">
-  <% if (product.author === user.id) { %>
-  <div class="btn-group">
-    <a class="btn btn-dark" style="margin: 5px" href="/shop/product/edit/<%- product.id %>">Edit</a>
-    <a class="btn btn-dark" style="margin: 5px" href="/shop/product/delete/<%- product.id %>">Delete</a>
-  </div>
-  <% } %>
   <article class="card">
     <div class="container-fliud">
       <div class="wrapper row">
@@ -35,7 +29,7 @@
           <div class="action">
             <form method="POST" action="/shop/cart/increase">
               <button class="add-to-cart btn btn-primary">Add to cart</button>
-              <input type="hidden" name="productId" value="<%- product.id %>" />
+              <input type="hidden" name="productId" value="<%- product._id %>" />
             </form>
           </div>
         </div>

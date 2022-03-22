@@ -5,11 +5,19 @@
   <div class="container row">
     <% orders.forEach((order, index) => { %>
     <article class="col-12" style="padding: 5px">
-      <h1>#<%- order.id -%></h1>
+      <h1>#<%- (index + 1) -%></h1>
       <div><%- order.createdAt -%></div>
+      <div><%- order.updatedAt -%></div>
+      <div><%- order.status -%></div>
       <div>
-        <% order.Products.forEach(product => { %>
-        <h2><%- product.title -%></h2>
+        <% order.products.forEach(orderProduct => { %>
+        <img src="<%- orderProduct.product.img -%>">
+        <h2><%- orderProduct.product.title -%></h2>
+        <div>
+          <div><%- orderProduct.product.price -%></div>
+          <div><%- orderProduct.amount -%></div>
+          <div><%- orderProduct.total -%></div>
+        </div>
         <% }) %>
       </div>
     </article>

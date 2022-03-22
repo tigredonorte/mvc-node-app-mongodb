@@ -1,50 +1,38 @@
-import { DataTypes, Model, Sequelize } from '@sequelize/core';
-
 import { Database } from '../../../utils/database';
-import { User } from '../../user/user/user.model';
-import { CartItem, CartModel } from '../cart/cart.model';
-import { Product } from '../products/products.model';
+import { CartModel, ICart } from '../cart/cart.model';
 
-interface IOrder {
-  productId: number;
+interface IOrder extends ICart {
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  status: 'processing' | 'approved' | 'shipped' | 'completed';
 }
-
-const Order = Database.db.define('order', {
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    primaryKey: true,
-    allowNull: false,
-    autoIncrement: true,
-  }
-});
-
-export const OrderItem = Database.db.define('order_item', {
-  quantity: {
-    type: DataTypes.INTEGER()
-  }
-});
-
-Order.belongsTo(User);
-User.hasMany(Order);
-Order.belongsToMany(Product, { through: OrderItem });
-
-const cart = new CartModel();
 
 export class OrdersModel {
 
-  async add(user: User) {
+  cart = new CartModel();
+  async list(userId: string): Promise<IOrder[]> {
     try {
-      const cartItems = await cart.getByUserId(user.id);
-      const orderItems = cartItems.map((cartItem) => {
-        const product = cartItem.Product;
-        cartItem.Product.order_item = {
-          quantity: product.amount
-        };
-        return product;
-      });
-      const order = await user.createOrder();
-      await order.addProducts(orderItems);
-      CartItem.destroy({ where: { userId: user.id }  });
+      return await this.db().find({ userId }).toArray() as unknown as IOrder[];
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+
+  async add(userId: string) {
+    try {
+      const cartItems = await this.cart.getByUserId(userId);
+      delete cartItems._id;
+      const order: IOrder = {
+        ...cartItems,
+        userId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'processing'
+      };
+      await this.db().insertOne(order);
+      await this.cart.clearCart(userId);
       return true;
     } catch (error) {
       console.error(error);
@@ -61,4 +49,6 @@ export class OrdersModel {
   }
 
   async delete(id: string) {}
+
+  db = () => Database.db.collection('orders');
 }
