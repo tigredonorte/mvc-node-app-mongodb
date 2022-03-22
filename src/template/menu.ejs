@@ -7,8 +7,8 @@
 
   if (!user) {
     pages.push({ title: 'Login' , link: '/auth' });
-    adminPages.push({ title: 'Orders' , link: '/shop/orders' });
   } else {
+    pages.push({ title: 'Orders' , link: '/shop/orders' });
     pages.push({ title: 'Logout' , link: '/auth/logout' });
   }
 

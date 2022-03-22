@@ -4,14 +4,14 @@ import bcrypt from 'bcrypt';
 import { Token } from '../../../utils/token';
 
 export interface IUser {
-  id?: string;
+  id?: number;
   email: string;
   password: string;
   name: string;
 }
 
 export class User extends Model implements IUser {
-  declare id: string;
+  declare id: number;
   declare email: string;
   declare password: string;
   declare name: string;
@@ -27,7 +27,6 @@ User.init(
     },
     email: {
       type: new DataTypes.STRING(64),
-      unique: true,
       allowNull: false,
     },
     password: {
@@ -43,17 +42,9 @@ User.init(
     tableName: 'User',
     sequelize: Database.db, // passing the `sequelize` instance is required
     timestamps: true,
-    hooks: {
-      // beforeCreate: (user) => {
-      //   user.salt = crypto.getRandomValues().toString('hex');
-      //   user.password = crypt.pbkdf2Sync(user.password, user.salt, 1000, 64, `sha512`).toString(`hex`);
-      // },
-    },
-    // instanceMethods: {
-    //   validPassword: function (password) {
-    //     return bcrypt.compareSync(password, this.password);
-    //   },
-    // },
+    indexes: [
+      { unique:true, fields: ['email'] }
+    ]
   }
 );
 

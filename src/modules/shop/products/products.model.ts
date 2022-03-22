@@ -19,48 +19,48 @@ export class Product extends Model implements IProduct {
   declare img: string;
 }
 
-Product.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
+Product.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    title: {
+      type: new DataTypes.STRING(64),
+      allowNull: false,
+    },
+    description: {
+      type: new DataTypes.TEXT(),
+      allowNull: false,
+    },
+    price: {
+      type: new DataTypes.FLOAT(11, 2),
+      allowNull: false,
+    },
+    img: {
+      type: new DataTypes.STRING(64),
+      allowNull: false,
+    },
+    author: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+    },
   },
-  title: {
-    type: new DataTypes.STRING(64),
-    allowNull: false,
-  },
-  description: {
-    type: new DataTypes.TEXT(),
-    allowNull: false
-  },
-  price: {
-    type: new DataTypes.FLOAT(11, 2),
-    allowNull: false
-  },
-  img: {
-    type: new DataTypes.STRING(64),
-    allowNull: false,
-  },
-  author: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false,
-  }
-},
-{
-    tableName: "product",
-    sequelize: Database.db, // passing the `sequelize` instance is required
+  {
+    tableName: 'product',
+    sequelize: Database.db,
   }
 );
 
-Product.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Product.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE', as: 'product-user' });
 
 export class ProductsModel {
-
   static readonly table = 'product';
 
   async list(author?: number): Promise<Product[]> {
     try {
-      const where = author ? { where: { author }} : {};
+      const where = author ? { where: { author } } : {};
       return await Product.findAll(where);
     } catch (error) {
       console.error(error);
@@ -94,7 +94,7 @@ export class ProductsModel {
   async edit(id: string, product: IProduct): Promise<boolean> {
     try {
       const price = parseFloat(product.price.toString());
-      await Product.update({...product, price}, { where: { id } } );
+      await Product.update({ ...product, price }, { where: { id } });
       return true;
     } catch (error) {
       console.error(error);

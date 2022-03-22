@@ -15,6 +15,7 @@ export class CartItem extends Model implements ICartItem {
   declare productId: string;
   declare userId: string;
   declare amount: number;
+  declare total?: number;
 }
 
 CartItem.init(
@@ -45,7 +46,7 @@ CartItem.belongsTo(Product, { foreignKey: 'productId', onDelete: 'CASCADE' });
 
 export class CartModel {
   static readonly table = 'cart';
-  async getByUserId(userId: number): Promise<ICartItem[]> {
+  async getByUserId(userId: number): Promise<CartItem[]> {
     try {
       const items = await CartItem.findAll({
         where: { userId },
@@ -58,7 +59,7 @@ export class CartModel {
         attributes: ['amount', [Sequelize.literal('amount * price'), 'total']],
       });
 
-      return items.map((el) => el.get({ plain: true }));
+      return items;
     } catch (error) {
       console.error(error);
       return [];

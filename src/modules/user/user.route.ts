@@ -1,10 +1,9 @@
 import express from 'express';
-import { AuthController } from './auth/auth.controller';
+
 import { UserController } from './user/user.controller';
 
 const UserRoutes = express.Router();
 const userController = new UserController();
-const authController = new AuthController();
 
 // user admin
 UserRoutes.get('/user/list', userController.list);

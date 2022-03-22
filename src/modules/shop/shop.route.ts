@@ -20,7 +20,8 @@ ShopRoutes.post('/cart/delete', cartController.delete);
 
 // orders
 ShopRoutes.get('/orders', ordersController.list);
-ShopRoutes.post('/orders/add', ordersController.add);
+ShopRoutes.get('/orders/add', ordersController.add);
+// ShopRoutes.post('/orders/add', ordersController.add);
 ShopRoutes.post('/orders/edit/:id', ordersController.edit);
 
 export { ShopRoutes };
