@@ -1,7 +1,6 @@
 import bodyParser from 'body-parser';
 import connectLiveReload from 'connect-livereload';
 import express from 'express';
-import session from 'express-session';
 import livereload from 'livereload';
 import path from 'path';
 
@@ -12,6 +11,7 @@ import { UserRoutes } from './modules/user/user.route';
 import { Database } from './utils/database';
 import { authRouteGuard, nonAuthRouteGuard, userGuard } from './utils/route-guard';
 import { secureMiddleware } from './utils/secureApp';
+import { Session } from './utils/session';
 
 require('dotenv').config();
 
@@ -30,9 +30,10 @@ app.set('views', './src/');
 app.use(express.static(path.join('public')));
 app.use(secureMiddleware);
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(session({ secret: process.env.SECRET || '', cookie: { secure: true }, resave: false, saveUninitialized: true }));
+app.use(Session.getSessionMiddleware());
+
 app.use(connectLiveReload());
-app.use(userGuard(app));
+app.use(userGuard);
 
 app.use('/auth', [nonAuthRouteGuard(['/logout']), AuthRoutes]);
 app.use('/user', [authRouteGuard([]), UserRoutes]);

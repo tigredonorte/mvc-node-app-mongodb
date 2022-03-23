@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 
-import { Cookie } from '../../../utils/cookies';
 import { IUser, UsersModel } from '../user/user.model';
 
 const model = new UsersModel();
@@ -25,8 +24,8 @@ export class AuthController {
     if (token === false) {
       return res.end();
     }
-    Cookie.addCookie(res, { name: 'token', value: token, options: { maxAge: 1000 * 60 * 60 } });
-    res.redirect('/');
+    req.session.token = token;
+    req.session.save(() => res.redirect('/'));
   }
 
   signup(req: Request<{}>, res: Response<any>) {
@@ -45,7 +44,7 @@ export class AuthController {
   }
 
   async logout(req: Request<IUser>, res: Response<any>) {
-    await Cookie.removeCookie(res, 'token');
-    res.redirect(`/`);
+    delete req.session.token;
+    req.session.destroy(() => res.redirect(`/`));
   }
 }

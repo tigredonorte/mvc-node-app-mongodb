@@ -7,6 +7,7 @@ specifiers:
   '@types/bcrypt': ^5.0.0
   '@types/body-parser': ^1.19.2
   '@types/connect-livereload': ^0.6.0
+  '@types/connect-mongodb-session': ^2.4.2
   '@types/express': ^4.17.13
   '@types/express-session': ^1.17.4
   '@types/jsonwebtoken': ^8.5.8
@@ -15,6 +16,7 @@ specifiers:
   bcrypt: ^5.0.1
   body-parser: ^1.19.2
   connect-livereload: ^0.6.1
+  connect-mongodb-session: ^3.1.1
   dotenv: ^16.0.0
   ejs: ^3.1.6
   eslint: ^8.11.0
@@ -42,6 +44,7 @@ dependencies:
   bcrypt: 5.0.1
   body-parser: 1.19.2
   connect-livereload: 0.6.1
+  connect-mongodb-session: 3.1.1
   dotenv: 16.0.0
   ejs: 3.1.6
   express: 4.17.3
@@ -58,6 +61,7 @@ devDependencies:
   '@types/bcrypt': 5.0.0
   '@types/body-parser': 1.19.2
   '@types/connect-livereload': 0.6.0
+  '@types/connect-mongodb-session': 2.4.2
   '@types/express': 4.17.13
   '@types/express-session': 1.17.4
   '@types/jsonwebtoken': 8.5.8
@@ -375,10 +379,24 @@ packages:
       '@types/node': 17.0.21
     dev: true
 
+  /@types/bson/4.2.0:
+    resolution: {integrity: sha512-ELCPqAdroMdcuxqwMgUpifQyRoTpyYCNr1V9xKyF40VsBobsj+BbWNRvwGchMgBPGqkw655ypkjj2MEF5ywVwg==}
+    deprecated: This is a stub types definition. bson provides its own type definitions, so you do not need this installed.
+    dependencies:
+      bson: 4.6.1
+    dev: true
+
   /@types/connect-livereload/0.6.0:
     resolution: {integrity: sha512-X/yH5WjuUWWAyevPxSyuEjrGAo3tXYte12BD7qWtHs6RPyUKg18seYlwT2/OPMV6/0QxjEkTTvEINcAXTqjjNg==}
     dependencies:
       '@types/connect': 3.4.35
+    dev: true
+
+  /@types/connect-mongodb-session/2.4.2:
+    resolution: {integrity: sha512-Fer+/SUi6ZtOPSsz3Js2YrUCO1KFDbxMWEIZHr5xAPMmEeXc0Owtna1im2qtgV+8R5D1Zqon+OTnvEKdqXAbjw==}
+    dependencies:
+      '@types/express-session': 1.17.4
+      '@types/mongodb': 3.6.20
     dev: true
 
   /@types/connect/3.4.35:
@@ -430,6 +448,13 @@ packages:
 
   /@types/mime/1.3.2:
     resolution: {integrity: sha512-YATxVxgRqNH6nHEIsvg6k2Boc1JHI9ZbH5iWFFv/MTkchz3b1ieGDa5T0a9RznNdI0KhVbdbWSN+KWWrQZRxTw==}
+    dev: true
+
+  /@types/mongodb/3.6.20:
+    resolution: {integrity: sha512-WcdpPJCakFzcWWD9juKoZbRtQxKIMYF/JIAM4JrNHrMcnJL6/a2NWjXxW7fo9hxboxxkg+icff8d7+WIEvKgYQ==}
+    dependencies:
+      '@types/bson': 4.2.0
+      '@types/node': 17.0.21
     dev: true
 
   /@types/ms/0.7.31:
@@ -579,6 +604,15 @@ packages:
     resolution: {integrity: sha512-lYe4Gx7QT+MKGbDsA+Z+he/Wtef0BiwDOlK/XkBrdfsh9J/jPPXbX0tE9x9cl27Tmu5gg3QUbUrQYa/y+KOHPQ==}
     dev: false
 
+  /archetype/0.13.0:
+    resolution: {integrity: sha512-ts/rng/A4UQPw1ZuQWWZvR2T0q2S5+zQGBH0RPsSlmyIAsZuIGEm1rgRga2NJnHODBbW/jVWMZIWbtlEyrS7JQ==}
+    engines: {node: '>= 4.0.0'}
+    dependencies:
+      lodash.clonedeep: 4.5.0
+      lodash.set: 4.3.2
+      mpath: 0.8.4
+    dev: false
+
   /are-we-there-yet/2.0.0:
     resolution: {integrity: sha512-Ci/qENmwHnsYo9xKIcUJN5LeDKdJ6R1Z1j9V/J5wyq8nh/mYPEpIKJbBZXtZjG04HiK7zV/p6Vs9952MrMeUIw==}
     engines: {node: '>=10'}
@@ -613,7 +647,6 @@ packages:
 
   /base64-js/1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
-    dev: false
 
   /bcrypt/5.0.1:
     resolution: {integrity: sha512-9BTgmrhZM2t1bNuDtrtIMVSmmxZBrJ71n8Wg+YgdjHuIWYF7SjjmCPZFB+/5i/o/PIeRpwVJR3P+NrpIItUjqw==}
@@ -678,7 +711,6 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       buffer: 5.7.1
-    dev: false
 
   /buffer-equal-constant-time/1.0.1:
     resolution: {integrity: sha1-+OcRMvf/5uAaXJaXpMbz5I1cyBk=}
@@ -693,7 +725,6 @@ packages:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
-    dev: false
 
   /bytes/3.1.2:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
@@ -832,6 +863,13 @@ packages:
 
   /connect-livereload/0.6.1:
     resolution: {integrity: sha512-3R0kMOdL7CjJpU66fzAkCe6HNtd3AavCS4m+uW4KtJjrdGPT0SQEZieAYd+cm+lJoBznNQ4lqipYWkhBMgk00g==}
+    dev: false
+
+  /connect-mongodb-session/3.1.1:
+    resolution: {integrity: sha512-HBfQW7lRLb64DopgxL4Pv8/iay4HcS1WU7YJfi7B8UbBPZGzVEHx67mx8xP5c2rWUMCQ4Xi/u4GUSC7e90Hhtw==}
+    dependencies:
+      archetype: 0.13.0
+      mongodb: 4.4.1
     dev: false
 
   /console-control-strings/1.1.0:
@@ -1548,7 +1586,6 @@ packages:
 
   /ieee754/1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
-    dev: false
 
   /ignore-by-default/1.0.1:
     resolution: {integrity: sha1-SMptcvbGo68Aqa1K5odr44ieKwk=}
@@ -1864,6 +1901,10 @@ packages:
       - utf-8-validate
     dev: false
 
+  /lodash.clonedeep/4.5.0:
+    resolution: {integrity: sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=}
+    dev: false
+
   /lodash.includes/4.3.0:
     resolution: {integrity: sha1-YLuYqHy5I8aMoeUTJUgzFISfVT8=}
     dev: false
@@ -1894,6 +1935,10 @@ packages:
 
   /lodash.once/4.1.1:
     resolution: {integrity: sha1-DdOXEhPHxW34gJd9UEyI+0cal6w=}
+    dev: false
+
+  /lodash.set/4.3.2:
+    resolution: {integrity: sha1-2HV7HagH3eJIFrDWqEvqGnYjCyM=}
     dev: false
 
   /lodash/4.17.21:

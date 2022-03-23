@@ -7,7 +7,7 @@ const views = 'modules/shop/products/views';
 
 export class ProductsController {
   async list(req: Request<any>, res: Response<any>) {
-    const id = req.baseUrl.match('admin') ? req.user._id : undefined;
+    const id = req.baseUrl.match('admin') ? res.locals.user._id : undefined;
     const products = await model.list(id);
     res.render(`${views}/index`, {
       isAdmin: !!id,
@@ -42,7 +42,7 @@ export class ProductsController {
   }
 
   async addPost(req: Request<any>, res: Response<any>) {
-    const result = await model.add({ ...req.body, userId: req.user._id });
+    const result = await model.add({ ...req.body, userId: res.locals.user._id });
     if (result === false) {
       return res.end();
     }

@@ -7,7 +7,7 @@ const views = 'modules/shop/orders/views/';
 
 export class OrdersController {
   async list(req: Request<any>, res: Response<any>) {
-    const orders = await model.list(req.user._id);
+    const orders = await model.list(res.locals.user._id);
     res.render(`${views}index`, {
       docTitle: 'My Orders',
       pageName: req.originalUrl,
@@ -17,7 +17,7 @@ export class OrdersController {
   }
 
   async add(req: Request, res: Response<any>) {
-    const result = await model.add(req.user._id);
+    const result = await model.add(res.locals.user._id);
     if (!result) {
       return res.end();
     }
