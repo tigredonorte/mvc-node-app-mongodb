@@ -7,8 +7,7 @@ const views = 'modules/shop/orders/views/';
 
 export class OrdersController {
   async list(req: Request<any>, res: Response<any>) {
-    const orders = (await model.list(req.user._id)).map(order => ({...order, products: Object.values(order.products)}));
-    console.log(orders);
+    const orders = await model.list(req.user._id);
     res.render(`${views}index`, {
       docTitle: 'My Orders',
       pageName: req.originalUrl,

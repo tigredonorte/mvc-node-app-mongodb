@@ -7,12 +7,11 @@ const views = 'modules/shop/cart/views/';
 export class CartController {
   async list(req: Request, res: Response<any>) {
     const userCart = await model.getByUserId(req.user._id);
-    console.log(Object.values(userCart.products));
     res.render(`${views}index`, {
       docTitle: 'My Chart',
       pageName: req.originalUrl,
       total: userCart?.total || 0,
-      cart: Object.values(userCart.products),
+      cart: Array.from(userCart.products.values()),
     });
   }
 

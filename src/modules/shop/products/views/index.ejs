@@ -2,15 +2,16 @@
 
 <main style="margin-top: 60px">
   <% if(hasProducts) { %>
-  <div class="container row">
+  <div class="row" style="margin: 0 20px;">
     <% products.forEach((product, index) => { %>
-    <article class="col-12 col-sm-6 col-md-4 col-lg-4 col-xlg-3" style="padding: 5px; height: 400px">
-      <div class="card">
-        <img class="card-img-top img-thumbnail" style="padding: 5px; height: 200px" src="<%- product.img %>" />
+    <article class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-3" style="padding: 5px;">
+      <a class="text-reset text-decoration-none" href="/shop/product/<%- product._id %>" >
+      <div class="card" style="margin: 5px;">
+        <img class="card-img-top img-thumbnail" style="padding: 5px; height: 200px; border: none;" src="<%- product.img %>" />
         <div class="card-body">
           <h2 class="card-subtitle text-muted mb-2"><%- product.title %></h2>
           <h1 class="card-title">R$ <%- product.price %></h1>
-          <p class="card-tex"><%- product.description %></p>
+          <p class="card-tex">By <%- product.userId.name %></p>
           <div class="row">
             <% if (isAdmin) {%>
             <div class="btn-group">
@@ -19,19 +20,16 @@
             </div>
             <% } else { %>
             <div style="margin-bottom: 5px" class="col-12">
-              <a class="btn btn-primary col-12" href="/shop/product/<%- product._id %>">Details</a>
-            </div>
-            <div style="margin-bottom: 5px" class="col-12">
               <form method="POST" action="/shop/cart/increase">
                 <button class="btn btn-primary col-12">Add to cart</button>
                 <input type="hidden" name="productId" value="<%- product._id %>" />
               </form>
             </div>
-
             <% } %>
           </div>
         </div>
       </div>
+      </a>
     </article>
     <% }) %>
   </div>

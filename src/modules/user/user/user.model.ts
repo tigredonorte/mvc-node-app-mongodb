@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
-import { Database } from '../../../utils/database';
+import mongoose, { Schema } from 'mongoose';
+
 import { Token } from '../../../utils/token';
 
 export interface IUser {
@@ -7,27 +8,54 @@ export interface IUser {
   password: string;
   name: string;
 }
-export class UsersModel {
 
+export const User = mongoose.model(
+  'user',
+  new Schema<IUser>({
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+  })
+);
+
+export class UsersModel {
   async list(): Promise<IUser[]> {
     try {
-      return [];
+      return await User.find();
     } catch (error) {
       console.error(error);
       return [];
     }
   }
 
-  async get(id: string): Promise<Partial<IUser>> {
+  async get(id: string): Promise<IUser | null> {
     try {
-      return {};
+      this.checkId(id);
+      return (await User.findById({ _id: id })) as IUser;
     } catch (error) {
-      return {};
+      return null;
     }
   }
 
   async add(user: IUser): Promise<boolean> {
     try {
+      const salt = await bcrypt.genSalt(10);
+      const password = await bcrypt.hash(user.password as string, salt);
+      const u = new User({
+        ...user,
+        password,
+      });
+      await u.save();
       return true;
     } catch (error) {
       console.error(error);
@@ -37,6 +65,12 @@ export class UsersModel {
 
   async edit(id: string, user: IUser): Promise<boolean> {
     try {
+      this.checkId(id);
+      if (user.password) {
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(user.password as string, salt);
+      }
+      User.updateOne({ _id: id }, { $set: user });
       return true;
     } catch (error) {
       console.error(error);
@@ -46,6 +80,8 @@ export class UsersModel {
 
   async delete(id: string): Promise<boolean> {
     try {
+      this.checkId(id);
+      await User.deleteOne({ _id: id });
       return true;
     } catch (error) {
       console.error(error);
@@ -55,7 +91,7 @@ export class UsersModel {
 
   async login(user: { email: string; password: string }): Promise<false | string> {
     try {
-      const foundUser = await this.db().findOne({ email: user.email });
+      const foundUser = await User.findOne({ email: user.email });
       if (!foundUser) {
         return false;
       }
@@ -63,11 +99,14 @@ export class UsersModel {
       if (!password_valid) {
         return false;
       }
-      return Token.sign({
-        _id: foundUser._id.toString(),
-        email: foundUser.email,
-        name: foundUser.name,
-      }, '1h');
+      return Token.sign(
+        {
+          _id: foundUser._id.toString(),
+          email: foundUser.email,
+          name: foundUser.name,
+        },
+        process.env.TOKEN_PERIOD || '2h'
+      );
     } catch (error) {
       console.error(error);
       return false;
@@ -76,12 +115,7 @@ export class UsersModel {
 
   async signup(user: IUser): Promise<boolean> {
     try {
-      const salt = await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash(user.password, salt);
-      this.db().insertOne({
-        ...user,
-        password: hash,
-      });
+      await this.add(user);
       return true;
     } catch (error) {
       console.error(error);
@@ -89,5 +123,9 @@ export class UsersModel {
     }
   }
 
-  db = () => Database.db.collection('users');
+  checkId(productId: string) {
+    if (!productId) {
+      throw new Error('You must inform the product Id');
+    }
+  }
 }

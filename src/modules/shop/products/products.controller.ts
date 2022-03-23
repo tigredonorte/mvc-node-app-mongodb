@@ -42,11 +42,11 @@ export class ProductsController {
   }
 
   async addPost(req: Request<any>, res: Response<any>) {
-    const result = await model.add({ ...req.body, author: req.user._id });
+    const result = await model.add({ ...req.body, userId: req.user._id });
     if (result === false) {
       return res.end();
     }
-    res.redirect('/shop');
+    res.redirect('/admin/shop/');
   }
 
   async edit(req: Request<any>, res: Response<any>) {
@@ -67,7 +67,7 @@ export class ProductsController {
     if (!success) {
       return res.end();
     }
-    res.redirect('/shop');
+    res.redirect('/admin/shop/');
   }
 
   async delete(req: Request<any>, res: Response<any>) {
@@ -75,6 +75,6 @@ export class ProductsController {
     if (!success) {
       return res.end();
     }
-    res.redirect('/shop');
+    res.redirect('/admin/shop/');
   }
 }

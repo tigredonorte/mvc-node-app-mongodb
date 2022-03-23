@@ -1,32 +1,58 @@
 import { ObjectId } from 'mongodb';
+import mongoose, { Schema } from 'mongoose';
 
-import { Database } from '../../../utils/database';
+import { User } from '../../user/user/user.model';
 
 export interface IProduct {
   title: string;
   price: number;
   description: string;
   img: string;
+  userId: string | Schema.Types.ObjectId;
 }
 
-export class ProductsModel {
+const productSchema = new Schema<IProduct>({
+  title: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  img: {
+    type: String,
+    required: true,
+  },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: User.modelName,
+    required: true,
+  },
+});
 
-  async list(author?: string): Promise<IProduct[]> {
+export const Product = mongoose.model('product', productSchema);
+
+export class ProductsModel {
+  async list(userId?: string): Promise<IProduct[]> {
     try {
-      const products = await this.db().find(author ? { author } : {}).toArray();
-      return (products as unknown as IProduct[]);
+      return await Product.find(userId ? { userId } : {})
+        .select(['title', 'price', 'img'])
+        .populate('userId', ['name']);
     } catch (error) {
       console.error(error);
       return [];
     }
   }
 
-  async get(id: string): Promise<IProduct> {
+  async get(productId: string): Promise<IProduct> {
     try {
-      if (!id) {
-        throw new Error('You must inform the product Id');
-      }
-      return await this.db().findOne({ _id: new ObjectId(id) }) as unknown as IProduct;
+      this.checkId(productId);
+      return (await Product.findById(productId)) as IProduct;
     } catch (error: any) {
       console.error(error);
       throw new Error(error);
@@ -35,8 +61,8 @@ export class ProductsModel {
 
   async add(product: IProduct): Promise<boolean> {
     try {
-      product.price = parseFloat(product.price.toString());
-      this.db().insertOne(product);
+      const prod = new Product(product);
+      await prod.save();
       return true;
     } catch (error) {
       console.error(error);
@@ -44,13 +70,10 @@ export class ProductsModel {
     }
   }
 
-  async edit(id: string, product: IProduct): Promise<boolean> {
+  async edit(productId: string, product: IProduct): Promise<boolean> {
     try {
-      if (!id) {
-        throw new Error('You must inform the product Id');
-      }
-      product.price = parseFloat(product.price.toString());
-      await this.db().updateOne({ _id: new ObjectId(id) }, { $set: product });
+      this.checkId(productId);
+      await Product.updateOne({ _id: productId }, { $set: product });
       return true;
     } catch (error) {
       console.error(error);
@@ -58,12 +81,10 @@ export class ProductsModel {
     }
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(productId: string): Promise<boolean> {
     try {
-      if (!id) {
-        throw new Error('You must inform the product Id');
-      }
-      await this.db().deleteOne({ _id: new ObjectId(id) });
+      this.checkId(productId);
+      await Product.findByIdAndDelete(productId);
       return true;
     } catch (error) {
       console.error(error);
@@ -71,5 +92,9 @@ export class ProductsModel {
     }
   }
 
-  db = () => Database.db.collection('products');
+  checkId(productId: string) {
+    if (!productId) {
+      throw new Error('You must inform the product Id');
+    }
+  }
 }

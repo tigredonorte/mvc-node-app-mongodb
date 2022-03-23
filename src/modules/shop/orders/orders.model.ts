@@ -1,37 +1,67 @@
-import { Database } from '../../../utils/database';
-import { CartModel, ICart } from '../cart/cart.model';
+import mongoose, { Schema } from 'mongoose';
+
+import { User } from '../../user/user/user.model';
+import { cartItemSchema, CartModel, ICart } from '../cart/cart.model';
 
 interface IOrder extends ICart {
-  userId: string;
+  userId: Schema.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
   status: 'processing' | 'approved' | 'shipped' | 'completed';
+  total: number;
 }
 
-export class OrdersModel {
+const Order = mongoose.model(
+  'Order',
+  new Schema<IOrder>(
+    {
+      userId: {
+        type: Schema.Types.ObjectId,
+        ref: User.modelName,
+        required: true,
+      },
+      status: {
+        type: String,
+        enum: ['processing', 'approved', 'shipped', 'completed'],
+        default: 'processing',
+        required: true,
+      },
+      total: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
+      products: {
+        type: Map,
+        of: cartItemSchema,
+        default: new Map(),
+      },
+    },
+    { timestamps: true }
+  )
+);
 
+export class OrdersModel {
   cart = new CartModel();
   async list(userId: string): Promise<IOrder[]> {
     try {
-      return await this.db().find({ userId }).toArray() as unknown as IOrder[];
+      return await Order.find({ userId });
     } catch (error) {
       console.error(error);
       return [];
     }
   }
 
-  async add(userId: string) {
+  async add(userId: string): Promise<boolean> {
     try {
       const cartItems = await this.cart.getByUserId(userId);
-      delete cartItems._id;
-      const order: IOrder = {
+      const order = new Order({
         ...cartItems,
+        products: Object.fromEntries(cartItems.products),
         userId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        status: 'processing'
-      };
-      await this.db().insertOne(order);
+        status: 'processing',
+      });
+      await order.save();
       await this.cart.clearCart(userId);
       return true;
     } catch (error) {
@@ -40,15 +70,15 @@ export class OrdersModel {
     }
   }
 
-  async get(id: string) {
-    return {};
+  async get(id: string): Promise<IOrder | null> {
+    return await Order.findById(id);
   }
 
-  async edit(id: string, order: IOrder) {
+  async edit(id: string, order: IOrder): Promise<boolean> {
     return true;
   }
 
-  async delete(id: string) {}
-
-  db = () => Database.db.collection('orders');
+  async delete(id: string): Promise<boolean> {
+    return true;
+  }
 }
