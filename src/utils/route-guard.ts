@@ -1,11 +1,11 @@
 import { Express, NextFunction, Request, Response } from 'express';
 
-import { parseCookies } from './cookies';
+import { Cookie } from './cookies';
 import { Token } from './token';
 
 export const userGuard = (app: Express) =>
   async function (req: Request<any>, res: Response<any>, next: NextFunction) {
-    req._cookies = parseCookies(req);
+    req._cookies = Cookie.parseCookies(req);
     const rawUser = Token.getToken(req._cookies.token);
     req.user = rawUser;
     app.locals.user = rawUser;

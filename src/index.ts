@@ -11,6 +11,7 @@ import { AuthRoutes } from './modules/user/auth.route';
 import { UserRoutes } from './modules/user/user.route';
 import { Database } from './utils/database';
 import { authRouteGuard, nonAuthRouteGuard, userGuard } from './utils/route-guard';
+import { secureMiddleware } from './utils/secureApp';
 
 require('dotenv').config();
 
@@ -27,6 +28,7 @@ app.set('view engine', 'ejs');
 app.set('views', './src/');
 
 app.use(express.static(path.join('public')));
+app.use(secureMiddleware);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({ secret: process.env.SECRET || '', cookie: { secure: true }, resave: false, saveUninitialized: true }));
 app.use(connectLiveReload());
