@@ -27,14 +27,14 @@
                       </div>
                       <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
                         <form method="POST" action="/shop/cart/decrease">
-                          <button class="btn btn-link px-2"> <i class="fas fa-minus"></i></button>
+                          <button class="btn btn-link px-2"> <i class="fa fa-minus"></i></button>
                           <input type="hidden" name="productId" value="<%- c.product._id %>" />
                         </form>
 
                         <input id="form1" min="0" disabled name="quantity" value="<%- c.amount %>" type="number" class="form-control form-control-sm" />
 
                         <form method="POST" action="/shop/cart/increase">
-                          <button class="btn btn-link px-2"> <i class="fas fa-plus"></i></button>
+                          <button class="btn btn-link px-2"> <i class="fa fa-plus"></i></button>
                           <input type="hidden" name="productId" value="<%- c.product._id %>" />
                         </form>
                       </div>
@@ -43,7 +43,7 @@
                       </div>
                       <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                         <form method="POST" action="/shop/cart/delete">
-                          <button class="btn btn-link px-2"> <i class="fas fa-plus"></i></button>
+                          <button class="btn btn-link px-2"> <i class="fa fa-trash"></i></button>
                           <input type="hidden" name="productId" value="<%- c.product._id %>" />
                         </form>
                       </div>
@@ -54,7 +54,7 @@
 
                     <div class="pt-5">
                       <h6 class="mb-0">
-                        <a href="#!" class="text-body"><i class="fas fa-long-arrow-alt-left me-2"></i>Back to shop</a>
+                        <a href="/" class="text-body"><i class="fa fa-long-arrow-alt-left me-2"></i>Back to shop</a>
                       </h6>
                     </div>
                   </div>
