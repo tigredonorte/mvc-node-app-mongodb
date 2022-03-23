@@ -1,13 +1,16 @@
 import { Request, Response } from 'express';
 
-import { OrdersModel } from './orders.model';
+import { OrdersModel, IOrder } from './orders.model';
 
 const model = new OrdersModel();
 const views = 'modules/shop/orders/views/';
 
 export class OrdersController {
   async list(req: Request<any>, res: Response<any>) {
-    const orders = await model.list(res.locals.user._id);
+    let orders: IOrder[] = [];
+    try {
+      orders = await model.list(res.locals.user._id);
+    } catch (error) {/** silent fail */}
     res.render(`${views}index`, {
       docTitle: 'My Orders',
       pageName: req.originalUrl,
@@ -17,15 +20,22 @@ export class OrdersController {
   }
 
   async add(req: Request, res: Response<any>) {
-    const result = await model.add(res.locals.user._id);
-    if (!result) {
-      return res.end();
+    try {
+      await model.add(res.locals.user._id);
+      res.redirect('/shop/orders');
+    } catch (error: any) {
+      req.flash('error', error?.message ?? error);
+      res.redirect('/shop/cart');
     }
-    res.redirect('/shop/orders');
   }
 
   async edit(req: Request<any>, res: Response<any>) {
-    await model.edit(req.params.id, req.body);
-    res.redirect('/shop');
+    try {
+      await model.edit(req.params.id, req.body);
+      res.redirect('/shop');
+    } catch (error: any) {
+      req.flash('error', error?.message ?? error);
+      res.redirect('/shop/orders');
+    }
   }
 }

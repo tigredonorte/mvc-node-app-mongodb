@@ -6,6 +6,7 @@ specifiers:
   '@swc/helpers': ^0.3.8
   '@types/bcrypt': ^5.0.0
   '@types/body-parser': ^1.19.2
+  '@types/connect-flash': ^0.0.37
   '@types/connect-livereload': ^0.6.0
   '@types/connect-mongodb-session': ^2.4.2
   '@types/cookie-parser': ^1.4.2
@@ -17,6 +18,7 @@ specifiers:
   '@types/node': ^17.0.21
   bcrypt: ^5.0.1
   body-parser: ^1.19.2
+  connect-flash: ^0.1.1
   connect-livereload: ^0.6.1
   connect-mongodb-session: ^3.1.1
   cookie-parser: ^1.4.6
@@ -45,8 +47,10 @@ specifiers:
 
 dependencies:
   '@sequelize/core': 7.0.0-alpha.10_mysql2@2.3.3
+  '@types/connect-flash': 0.0.37
   bcrypt: 5.0.1
   body-parser: 1.19.2
+  connect-flash: 0.1.1
   connect-livereload: 0.6.1
   connect-mongodb-session: 3.1.1
   cookie-parser: 1.4.6
@@ -385,7 +389,6 @@ packages:
     dependencies:
       '@types/connect': 3.4.35
       '@types/node': 17.0.21
-    dev: true
 
   /@types/bson/4.2.0:
     resolution: {integrity: sha512-ELCPqAdroMdcuxqwMgUpifQyRoTpyYCNr1V9xKyF40VsBobsj+BbWNRvwGchMgBPGqkw655ypkjj2MEF5ywVwg==}
@@ -393,6 +396,12 @@ packages:
     dependencies:
       bson: 4.6.1
     dev: true
+
+  /@types/connect-flash/0.0.37:
+    resolution: {integrity: sha512-SfmGGYpKvPfZeA+v74FS0HlYqVsx8Inb4d3px99kz2xSMx/IQiz/K/i+7MHTmk/OkE+0suZX108tHrQJ8QEGag==}
+    dependencies:
+      '@types/express': 4.17.13
+    dev: false
 
   /@types/connect-livereload/0.6.0:
     resolution: {integrity: sha512-X/yH5WjuUWWAyevPxSyuEjrGAo3tXYte12BD7qWtHs6RPyUKg18seYlwT2/OPMV6/0QxjEkTTvEINcAXTqjjNg==}
@@ -411,7 +420,6 @@ packages:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
       '@types/node': 17.0.21
-    dev: true
 
   /@types/cookie-parser/1.4.2:
     resolution: {integrity: sha512-uwcY8m6SDQqciHsqcKDGbo10GdasYsPCYkH3hVegj9qAah6pX5HivOnOuI3WYmyQMnOATV39zv/Ybs0bC/6iVg==}
@@ -437,7 +445,6 @@ packages:
       '@types/node': 17.0.21
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
-    dev: true
 
   /@types/express-session/1.17.4:
     resolution: {integrity: sha512-7cNlSI8+oOBUHTfPXMwDxF/Lchx5aJ3ho7+p9jJZYVg9dVDJFh3qdMXmJtRsysnvS+C6x46k9DRYmrmCkE+MVg==}
@@ -452,7 +459,6 @@ packages:
       '@types/express-serve-static-core': 4.17.28
       '@types/qs': 6.9.7
       '@types/serve-static': 1.13.10
-    dev: true
 
   /@types/jsonwebtoken/8.5.8:
     resolution: {integrity: sha512-zm6xBQpFDIDM6o9r6HSgDeIcLy82TKWctCXEPbJJcXb5AKmi5BNNdLXneixK4lplX3PqIVcwLBCGE/kAGnlD4A==}
@@ -468,7 +474,6 @@ packages:
 
   /@types/mime/1.3.2:
     resolution: {integrity: sha512-YATxVxgRqNH6nHEIsvg6k2Boc1JHI9ZbH5iWFFv/MTkchz3b1ieGDa5T0a9RznNdI0KhVbdbWSN+KWWrQZRxTw==}
-    dev: true
 
   /@types/mongodb/3.6.20:
     resolution: {integrity: sha512-WcdpPJCakFzcWWD9juKoZbRtQxKIMYF/JIAM4JrNHrMcnJL6/a2NWjXxW7fo9hxboxxkg+icff8d7+WIEvKgYQ==}
@@ -486,18 +491,15 @@ packages:
 
   /@types/qs/6.9.7:
     resolution: {integrity: sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw==}
-    dev: true
 
   /@types/range-parser/1.2.4:
     resolution: {integrity: sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==}
-    dev: true
 
   /@types/serve-static/1.13.10:
     resolution: {integrity: sha512-nCkHGI4w7ZgAdNkrEu0bv+4xNV/XDqW+DydknebMOQwkpDGx8G+HTlj7R7ABI8i8nKxVw0wtKPi1D+lPOkh4YQ==}
     dependencies:
       '@types/mime': 1.3.2
       '@types/node': 17.0.21
-    dev: true
 
   /@types/strip-bom/3.0.0:
     resolution: {integrity: sha1-FKjsOVbC6B7bdSB5CuzyHCkK69I=}
@@ -880,6 +882,11 @@ packages:
       write-file-atomic: 3.0.3
       xdg-basedir: 4.0.0
     dev: true
+
+  /connect-flash/0.1.1:
+    resolution: {integrity: sha1-2GMPJtlaf4UfmVax6MxnMvO2qjA=}
+    engines: {node: '>= 0.4.0'}
+    dev: false
 
   /connect-livereload/0.6.1:
     resolution: {integrity: sha512-3R0kMOdL7CjJpU66fzAkCe6HNtd3AavCS4m+uW4KtJjrdGPT0SQEZieAYd+cm+lJoBznNQ4lqipYWkhBMgk00g==}

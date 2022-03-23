@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { ProductsModel } from './products.model';
+import { IProduct, ProductsModel } from './products.model';
 
 const model = new ProductsModel();
 const views = 'modules/shop/products/views';
@@ -8,7 +8,10 @@ const views = 'modules/shop/products/views';
 export class ProductsController {
   async list(req: Request<any>, res: Response<any>) {
     const id = req.baseUrl.match('admin') ? res.locals.user._id : undefined;
-    const products = await model.list(id);
+    let products: IProduct[] = [];
+    try {
+      products = await model.list(id);
+    } catch (error) { /**silent fail */}
     res.render(`${views}/index`, {
       isAdmin: !!id,
       docTitle: 'My shop',
@@ -19,18 +22,19 @@ export class ProductsController {
   }
 
   async show(req: Request<any>, res: Response<any>) {
-    const product = await model.get(req.params.id);
-    if (!product) {
+    try {
+      const product = await model.get(req.params.id);
+      res.render(`${views}/product-details`, {
+        docTitle: product.title,
+        pageName: req.originalUrl,
+        product,
+      });
+    } catch (error) {
       return res.render('modules/index/views/404', {
         docTitle: 'Product not found',
-        docContent: `The product that your looking for doesn't exists`, // eslint-disable-line
+        docContent: `The product that your looking for doesn't exists`,
       });
     }
-    res.render(`${views}/product-details`, {
-      docTitle: product.title,
-      pageName: req.originalUrl,
-      product,
-    });
   }
 
   add(req: Request<any>, res: Response<any>) {
@@ -42,38 +46,46 @@ export class ProductsController {
   }
 
   async addPost(req: Request<any>, res: Response<any>) {
-    const result = await model.add({ ...req.body, userId: res.locals.user._id });
-    if (result === false) {
-      return res.end();
+    try {
+      await model.add({ ...req.body, userId: res.locals.user._id });
+      res.redirect('/admin/shop/');
+    } catch (error: any) {
+      req.flash('error', error?.message ?? error);
+      res.redirect('/admin/shop/product/add');
     }
-    res.redirect('/admin/shop/');
   }
 
   async edit(req: Request<any>, res: Response<any>) {
-    const product = await model.get(req.params.id);
-    console.log(product);
-    if (!product) {
-      return res.end();
+    try {
+      const product = await model.get(req.params.id);
+      res.render(`${views}/add-product`, {
+        docTitle: 'Add Products',
+        pageName: req.originalUrl,
+        product,
+      });
+    } catch (error) {
+      return res.render('modules/index/views/404', {
+        docTitle: 'Product not found',
+        docContent: `The product that your looking for doesn't exists`,
+      });
     }
-    res.render(`${views}/add-product`, {
-      docTitle: 'Add Products',
-      pageName: req.originalUrl,
-      product,
-    });
   }
 
   async editPatch(req: Request<any>, res: Response<any>) {
-    const success = await model.edit(req.params.id, req.body);
-    if (!success) {
-      return res.end();
+    try {
+      await model.edit(req.params.id, req.body);
+      res.redirect(`/admin/shop/product/edit/${req.params.id}`);
+    } catch (error: any) {
+      req.flash('error', error?.message ?? error);
+      res.redirect('/admin/shop/product/add');
     }
-    res.redirect('/admin/shop/');
   }
 
   async delete(req: Request<any>, res: Response<any>) {
-    const success = await model.delete(req.params.id);
-    if (!success) {
-      return res.end();
+    try {
+      await model.delete(req.params.id);
+    } catch (error: any) {
+      req.flash('error', error?.message ?? error);
     }
     res.redirect('/admin/shop/');
   }

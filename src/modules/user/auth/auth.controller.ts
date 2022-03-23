@@ -24,13 +24,9 @@ export class AuthController {
       const token = await model.login(req.body);
       req.session.token = token;
       req.session.save(() => res.redirect('/'));
-    } catch (error) {
-      res.render(`${views}/login`, {
-        error,
-        docTitle: 'Add User',
-        pageName: req.originalUrl,
-        product: {},
-      });
+    } catch (error: any) {
+      req.flash('error', error?.message ?? error);
+      res.redirect('/auth/login');
     }
   }
 
@@ -48,12 +44,8 @@ export class AuthController {
       req.session.token = token;
       req.session.save(() => res.redirect('/'));
     } catch (error: any) {
-      console.log(error);
-      return res.render(`${views}/signup`, {
-        error: error?.message ?? error,
-        docTitle: 'Signup',
-        pageName: req.originalUrl,
-      });
+      req.flash('error', error?.message ?? error);
+      res.redirect('/auth/signup');
     }
   }
 

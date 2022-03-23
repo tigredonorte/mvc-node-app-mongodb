@@ -49,15 +49,9 @@ export class CartModel {
 
   getId = (userId: string) => ({ _id: new ObjectId(userId) });
 
-  async clearCart(userId: string): Promise<boolean> {
-    try {
-      this.checkId('_', userId);
-      await Cart.deleteOne(this.getId(userId));
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+  async clearCart(userId: string): Promise<void> {
+    this.checkId('_', userId);
+    await Cart.deleteOne(this.getId(userId));
   }
 
   async getByUserId(userId: string): Promise<ICart> {
@@ -81,73 +75,55 @@ export class CartModel {
     }
   }
 
-  async increase(productId: string, userId: string): Promise<boolean> {
-    try {
-      this.checkId(productId, userId);
-      const product = await this.productModel.get(productId);
-      const cart = new Cart(await this.getByUserId(userId));
-      if (!cart?.products?.get(productId)) {
-        await Cart.updateOne(
-          { _id: new ObjectId(userId) },
-          {
-            $inc: {
-              total: product.price,
-            },
-            $set: {
-              [`products.${productId}.product`]: product,
-              [`products.${productId}.amount`]: 1,
-              [`products.${productId}.total`]: product.price,
-            },
-          }
-        );
-        return true;
-      }
-
-      await this.changeQuantity({ userId, productId, productPrice: product.price, increment: true });
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  }
-
-  async decrease(productId: string, userId: string): Promise<boolean> {
-    try {
-      this.checkId(productId, userId);
-      const product = await this.productModel.get(productId);
-      const cart = await this.getByUserId(userId);
-      if (cart.products.get(productId)?.amount === 1) {
-        return await this.drop(productId, userId);
-      }
-
-      await this.changeQuantity({ userId, productId, productPrice: product.price, increment: false });
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  }
-
-  async drop(productId: string, userId: string): Promise<boolean> {
-    try {
-      this.checkId(productId, userId);
-      const product = await this.productModel.get(productId);
+  async increase(productId: string, userId: string): Promise<void> {
+    this.checkId(productId, userId);
+    const product = await this.productModel.get(productId);
+    const cart = new Cart(await this.getByUserId(userId));
+    if (!cart?.products?.get(productId)) {
       await Cart.updateOne(
         { _id: new ObjectId(userId) },
         {
           $inc: {
-            total: -product.price,
+            total: product.price,
           },
-          $unset: {
-            [`products.${productId}`]: '',
+          $set: {
+            [`products.${productId}.product`]: product,
+            [`products.${productId}.amount`]: 1,
+            [`products.${productId}.total`]: product.price,
           },
         }
       );
-
-      return true;
-    } catch (error) {
-      return false;
+      return;
     }
+
+    await this.changeQuantity({ userId, productId, productPrice: product.price, increment: true });
+  }
+
+  async decrease(productId: string, userId: string): Promise<void> {
+    this.checkId(productId, userId);
+    const product = await this.productModel.get(productId);
+    const cart = await this.getByUserId(userId);
+    if (cart.products.get(productId)?.amount === 1) {
+      return await this.drop(productId, userId);
+    }
+
+    await this.changeQuantity({ userId, productId, productPrice: product.price, increment: false });
+  }
+
+  async drop(productId: string, userId: string): Promise<void> {
+    this.checkId(productId, userId);
+    const product = await this.productModel.get(productId);
+    await Cart.updateOne(
+      { _id: new ObjectId(userId) },
+      {
+        $inc: {
+          total: -product.price,
+        },
+        $unset: {
+          [`products.${productId}`]: '',
+        },
+      }
+    );
   }
 
   private async changeQuantity(data: { userId: string; productId: string; productPrice: number; increment: boolean }) {

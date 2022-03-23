@@ -39,57 +39,29 @@ export const Product = mongoose.model('product', productSchema);
 
 export class ProductsModel {
   async list(userId?: string): Promise<IProduct[]> {
-    try {
-      return await Product.find(userId ? { userId } : {})
+    return await Product.find(userId ? { userId } : {})
         .select(['title', 'price', 'img'])
         .populate('userId', ['name']);
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
   }
 
   async get(productId: string): Promise<IProduct> {
-    try {
-      this.checkId(productId);
-      return (await Product.findById(productId)) as IProduct;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error(error);
-    }
+    this.checkId(productId);
+    return (await Product.findById(productId)) as IProduct;
   }
 
-  async add(product: IProduct): Promise<boolean> {
-    try {
-      const prod = new Product(product);
-      await prod.save();
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+  async add(product: IProduct): Promise<void> {
+    const prod = new Product(product);
+    await prod.save();
   }
 
-  async edit(productId: string, product: IProduct): Promise<boolean> {
-    try {
-      this.checkId(productId);
-      await Product.updateOne({ _id: productId }, { $set: product });
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+  async edit(productId: string, product: IProduct): Promise<void> {
+    this.checkId(productId);
+    await Product.updateOne({ _id: productId }, { $set: product });
   }
 
-  async delete(productId: string): Promise<boolean> {
-    try {
-      this.checkId(productId);
-      await Product.findByIdAndDelete(productId);
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+  async delete(productId: string): Promise<void> {
+    this.checkId(productId);
+    await Product.findByIdAndDelete(productId);
   }
 
   checkId(productId: string) {
