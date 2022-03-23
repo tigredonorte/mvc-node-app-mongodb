@@ -88,3 +88,9 @@
   </nav>
 
 <body>
+
+<% if(typeof error !== 'undefined') { %>
+  <div class="alert alert-danger" role="alert" style="margin: 60px 10px 0 10px;">
+    <%- error -%>
+  </div>
+<% } %>

@@ -20,12 +20,18 @@ export class AuthController {
   }
 
   async loginPost(req: Request<{ email: string; password: string; }>, res: Response<any>) {
-    const token = await model.login(req.body);
-    if (token === false) {
-      return res.end();
+    try {
+      const token = await model.login(req.body);
+      req.session.token = token;
+      req.session.save(() => res.redirect('/'));
+    } catch (error) {
+      res.render(`${views}/login`, {
+        error,
+        docTitle: 'Add User',
+        pageName: req.originalUrl,
+        product: {},
+      });
     }
-    req.session.token = token;
-    req.session.save(() => res.redirect('/'));
   }
 
   signup(req: Request<{}>, res: Response<any>) {
@@ -36,11 +42,19 @@ export class AuthController {
   }
 
   async signupPost(req: Request<IUser>, res: Response<any>) {
-    const success = await model.signup(req.body);
-    if (!success) {
-      return res.end();
+    try {
+      await model.signup(req.body);
+      const token = await model.login(req.body);
+      req.session.token = token;
+      req.session.save(() => res.redirect('/'));
+    } catch (error: any) {
+      console.log(error);
+      return res.render(`${views}/signup`, {
+        error: error?.message ?? error,
+        docTitle: 'Signup',
+        pageName: req.originalUrl,
+      });
     }
-    res.redirect(`/`);
   }
 
   async logout(req: Request<IUser>, res: Response<any>) {

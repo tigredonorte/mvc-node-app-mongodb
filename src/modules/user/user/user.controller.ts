@@ -40,17 +40,24 @@ export class UserController {
   }
 
   async addPost(req: Request<any>, res: Response<any>) {
-    const result = await model.add(req.body);
-    if (result === false) {
-      return res.end();
+    try {
+      await model.add(req.body);
+      res.redirect('/user');
+    } catch (error) {
+      res.status(500);
+      res.render(`${views}/add`, {
+        error,
+        docTitle: 'Add User',
+        pageName: req.originalUrl,
+        product: {},
+      });
     }
-    res.redirect('/user');
   }
 
   async edit(req: Request<any>, res: Response<any>) {
     const user = await model.get(req.params.id);
     if (!user) {
-      return res.end();
+      res.redirect('/');
     }
     res.render(`${views}/add`, {
       docTitle: 'Edit User',
@@ -60,18 +67,32 @@ export class UserController {
   }
 
   async editPatch(req: Request<any>, res: Response<any>) {
-    const success = await model.edit(req.params.id, req.body);
-    if (!success) {
-      return res.end();
+    try {
+      await model.edit(req.params.id, req.body)
+      res.redirect(`/user/show/${req.params.id}`);
+    } catch (error) {
+      res.status(500);
+      res.render(`${views}/add`, {
+        error,
+        docTitle: 'Add User',
+        pageName: req.originalUrl,
+        product: {},
+      });
     }
-    res.redirect(`/user/show/${req.params.id}`);
   }
 
   async delete(req: Request<any>, res: Response<any>) {
-    const success = await model.delete(req.params.id);
-    if (!success) {
-      return res.end();
+    try {
+      await model.delete(req.params.id);
+      res.redirect('/user');
+    } catch (error) {
+      res.status(500);
+      res.render(`${views}/add`, {
+        error,
+        docTitle: 'Add User',
+        pageName: req.originalUrl,
+        product: {},
+      });
     }
-    res.redirect('/user');
   }
 }
