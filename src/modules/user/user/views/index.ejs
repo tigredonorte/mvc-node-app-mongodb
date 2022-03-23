@@ -17,6 +17,7 @@
               </div>
               <div style="margin-bottom: 5px" class="col-12">
                 <form method="POST" action="/shop/cart/increase">
+                  <input type="hidden" value="<%- csrfToken %>" name="_csrf" />
                   <button class="btn btn-primary col-12">Add to cart</button>
                   <input type="hidden" name="productId" value="<%- product.id %>" />
                 </form>

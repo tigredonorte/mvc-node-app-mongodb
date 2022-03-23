@@ -10,6 +10,7 @@
       <label class="form-label" for="price">Password</label>
       <input class="form-control" type="password" placeholder="Password" name="password" />
     </div>
+    <input type="hidden" value="<%- csrfToken %>" name="_csrf" />
     <button class="btn btn-primary start-50" type="submit">Login</button>
   </form>
 

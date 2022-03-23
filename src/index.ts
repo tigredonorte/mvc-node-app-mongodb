@@ -3,6 +3,8 @@ import connectLiveReload from 'connect-livereload';
 import express from 'express';
 import livereload from 'livereload';
 import path from 'path';
+import csurf from 'csurf';
+import cookieParser from 'cookie-parser';
 
 import { AdminRoutes } from './modules/shop/admin.route';
 import { ShopRoutes } from './modules/shop/shop.route';
@@ -28,9 +30,11 @@ app.set('view engine', 'ejs');
 app.set('views', './src/');
 
 app.use(express.static(path.join('public')));
-app.use(secureMiddleware);
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(Session.getSessionMiddleware());
+app.use(csurf({}));
+app.use(secureMiddleware);
 
 app.use(connectLiveReload());
 app.use(userGuard);
