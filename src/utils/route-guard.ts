@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { isEmpty } from 'ramda';
 
 import { Cookie } from './cookies';
 import { Token } from './token';
@@ -7,11 +8,8 @@ export const userGuard = async function (req: Request<any>, res: Response<any>, 
   req._cookies = Cookie.parseCookies(req);
   const rawUser = req.session.token ? Token.getToken(req.session.token) : null;
   res.locals.user = rawUser;
-  const error = req.flash('error');
-  if (error?.length){
-    console.log(error);
-    res.locals.error = error;
-  }
+  const messages =  req.flash();
+  res.locals.flashMessages = isEmpty(messages) ? null: messages;
   next();
 };
 

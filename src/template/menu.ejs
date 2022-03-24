@@ -89,13 +89,19 @@
 
 <body>
 
-<% if(typeof error !== 'undefined') { %>
-  <div class="alert alert-danger" role="alert" style="margin: 60px 10px 0 10px;">
-    <%- error -%>
-  </div>
-<% } %>
-<% if(typeof success !== 'undefined') { %>
-  <div class="alert alert-success" role="alert" style="margin: 60px 10px 0 10px;">
-    <%- success -%>
+<% if(flashMessages) { %>
+  <div style="margin: 60px 10px 0 10px;">
+    <%
+        for ( const i in flashMessages ) {
+          const _class = (i === 'error') ? 'danger' : i;
+          flashMessages[i].forEach(element => {
+            %>
+            <div class="alert alert-<%- _class -%>" role="alert">
+              <%- element -%>
+            </div>
+            <%
+          });
+        }
+    %>
   </div>
 <% } %>
