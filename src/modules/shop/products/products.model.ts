@@ -64,6 +64,14 @@ export class ProductsModel {
     await Product.findByIdAndDelete(productId);
   }
 
+  async isAuthorized(productId: string, userId: string) {
+    const product = await Product.findOne({ _id: productId, userId });
+    if (!product) {
+      throw new Error('Not Authorized!');
+    }
+    console.log(product);
+  }
+
   checkId(productId: string) {
     if (!productId) {
       throw new Error('You must inform the product Id');
