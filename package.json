@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "start http://localhost:3000 && nodemon ./src/index.ts",
+    "start": "start http://localhost:3000 && nodemon -e ts,ejs,js,mjs,json ./src/index.ts",
     "lint": "./node_modules/.bin/eslint --cache --ext .mjs,js,ts .",
     "lint:fix": "./node_modules/.bin/eslint --cache --fix --ext .mjs,js,ts .",
     "preinstall": "npx only-allow pnpm"
@@ -20,6 +20,7 @@
     "mvc"
   ],
   "dependencies": {
+    "@sendgrid/mail": "^7.6.2",
     "@sequelize/core": "^7.0.0-alpha.10",
     "@types/connect-flash": "^0.0.37",
     "bcrypt": "^5.0.1",
@@ -37,7 +38,9 @@
     "livereload": "^0.9.3",
     "mongodb": "^4.4.1",
     "mongoose": "^6.2.7",
-    "mysql2": "^2.3.3"
+    "mysql2": "^2.3.3",
+    "nanoid": "^3.3.1",
+    "random-token": "^0.0.8"
   },
   "devDependencies": {
     "@swc/core": "^1.2.159",

@@ -15,7 +15,6 @@ export class ProductsController {
     res.render(`${views}/index`, {
       isAdmin: !!id,
       docTitle: 'My shop',
-      pageName: req.originalUrl,
       products,
       hasProducts: products.length > 0,
     });
@@ -26,7 +25,6 @@ export class ProductsController {
       const product = await model.get(req.params.id);
       res.render(`${views}/product-details`, {
         docTitle: product.title,
-        pageName: req.originalUrl,
         product,
       });
     } catch (error) {
@@ -40,7 +38,6 @@ export class ProductsController {
   add(req: Request<any>, res: Response<any>) {
     res.render(`${views}/add-product`, {
       docTitle: 'Add Products',
-      pageName: req.originalUrl,
       product: {},
     });
   }
@@ -60,7 +57,6 @@ export class ProductsController {
       const product = await model.get(req.params.id);
       res.render(`${views}/add-product`, {
         docTitle: 'Add Products',
-        pageName: req.originalUrl,
         product,
       });
     } catch (error) {

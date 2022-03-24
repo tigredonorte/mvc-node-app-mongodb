@@ -13,7 +13,6 @@ export class OrdersController {
     } catch (error) {/** silent fail */}
     res.render(`${views}index`, {
       docTitle: 'My Orders',
-      pageName: req.originalUrl,
       orders,
       hasOrders: orders.length > 0,
     });

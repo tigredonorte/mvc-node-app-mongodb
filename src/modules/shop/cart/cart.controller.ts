@@ -15,7 +15,6 @@ export class CartController {
 
     res.render(`${views}index`, {
       docTitle: 'My Chart',
-      pageName: req.originalUrl,
       total: userCart?.total || 0,
       cart: Array.from(userCart.products.values()),
     });

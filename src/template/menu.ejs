@@ -94,3 +94,8 @@
     <%- error -%>
   </div>
 <% } %>
+<% if(typeof success !== 'undefined') { %>
+  <div class="alert alert-success" role="alert" style="margin: 60px 10px 0 10px;">
+    <%- success -%>
+  </div>
+<% } %>

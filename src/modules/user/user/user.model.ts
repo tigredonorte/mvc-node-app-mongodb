@@ -1,12 +1,12 @@
 import bcrypt from 'bcrypt';
 import mongoose, { Schema } from 'mongoose';
 
-import { Token } from '../../../utils/token';
-
 export interface IUser {
   email: string;
   password: string;
   name: string;
+  recoverDate?: Date,
+  recoverHash?: string,
 }
 
 const userSchema = new Schema<IUser>({
@@ -31,6 +31,8 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
   },
+  recoverDate: Date,
+  recoverHash: String
 });
 
 userSchema.post('save', function (error: any, doc: any, next: any) {
@@ -72,8 +74,7 @@ export class UsersModel {
   async edit(id: string, user: IUser): Promise<void> {
     this.checkId(id);
     if (user.password) {
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(user.password as string, salt);
+      user.password = await this.encryptPassword(user.password);
     }
     await User.updateOne({ _id: id }, { $set: user });
   }
@@ -82,28 +83,9 @@ export class UsersModel {
     await User.deleteOne({ _id: id });
   }
 
-  async login(user: { email: string; password: string }): Promise<string> {
-    const foundUser = await User.findOne({ email: user.email });
-    if (!foundUser) {
-      throw new Error('email or password incorrect');
-    }
-
-    const password_valid = await bcrypt.compare(user.password, foundUser.password);
-    if (!password_valid) {
-      throw new Error('email or password incorrect');
-    }
-    return Token.sign(
-      {
-        _id: foundUser._id.toString(),
-        email: foundUser.email,
-        name: foundUser.name,
-      },
-      process.env.TOKEN_PERIOD || '2h'
-    );
-  }
-
-  async signup(user: IUser): Promise<void> {
-    await this.add(user);
+  async encryptPassword(password: string) {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
   }
 
   checkId(productId: string) {

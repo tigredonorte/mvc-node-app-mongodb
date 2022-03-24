@@ -10,7 +10,6 @@ export class UserController {
     const userList = await model.list();
     res.render(`${views}/index`, {
       docTitle: 'User List',
-      pageName: req.originalUrl,
       userList,
       isEmpty: userList.length === 0,
     });
@@ -26,7 +25,6 @@ export class UserController {
     }
     res.render(`${views}/show`, {
       docTitle: user.name,
-      pageName: req.originalUrl,
       user,
     });
   }
@@ -34,7 +32,6 @@ export class UserController {
   add(req: Request<any>, res: Response<any>) {
     res.render(`${views}/add`, {
       docTitle: 'Add User',
-      pageName: req.originalUrl,
       product: {},
     });
   }
@@ -48,7 +45,6 @@ export class UserController {
       res.render(`${views}/add`, {
         error,
         docTitle: 'Add User',
-        pageName: req.originalUrl,
         product: {},
       });
     }
@@ -61,7 +57,6 @@ export class UserController {
     }
     res.render(`${views}/add`, {
       docTitle: 'Edit User',
-      pageName: req.originalUrl,
       user,
     });
   }
@@ -75,7 +70,6 @@ export class UserController {
       res.render(`${views}/add`, {
         error,
         docTitle: 'Add User',
-        pageName: req.originalUrl,
         product: {},
       });
     }
@@ -90,7 +84,6 @@ export class UserController {
       res.render(`${views}/add`, {
         error,
         docTitle: 'Add User',
-        pageName: req.originalUrl,
         product: {},
       });
     }

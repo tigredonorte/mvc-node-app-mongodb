@@ -16,11 +16,12 @@
     </div>
     <input type="hidden" value="<%- csrfToken %>" name="_csrf" />
     <button class="btn btn-primary start-50" type="submit">Signup</button>
+    <div style="margin-top: 20px; text-align: center;">
+      <div>
+        Already have an account? <a href="/auth/login"> Login </a>
+      </div>
+    </div>
   </form>
-
-  <div class="mb-12">
-    <a class="btn btn-secondary start-50 mb-3" href="/auth/login"> Login </a>
-  </div>
 </main>
 
 <%- include ("../../../../template/footer") %>
