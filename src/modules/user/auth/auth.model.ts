@@ -40,7 +40,7 @@ export class AuthModel {
     });
   }
 
-  async recover(email: string): Promise<void> {
+  async reset(email: string): Promise<void> {
     const foundUser = await User.findOne({ email });
     if (!foundUser) {
       throw new Error('Unable to recover this account!');
@@ -51,12 +51,12 @@ export class AuthModel {
     foundUser.recoverHash = nanoid(48);
     foundUser.recoverDate = dt;
     await foundUser.save();
-    const url = `http://localhost:3000/auth/changePassword/${foundUser.recoverHash}`;
+    const url = `http://localhost:3000/auth/reset/${foundUser.recoverHash}`;
     await Mailer.send({
       to: email,
       subject: 'Recover password',
       html: `
-      hi ${foundUser.name}, <br>
+      Hi ${foundUser.name}, <br>
 
       Someone is trying to recover your password. If it's not you, just ignore this email. <br><br>
 
@@ -85,7 +85,7 @@ export class AuthModel {
     return user;
   }
 
-  async changePassword(recoverHash: string, data: { password: string; confirm_password: string }) {
+  async resetPassword(recoverHash: string, data: { password: string; confirm_password: string }) {
     if (data.password !== data.confirm_password) {
       throw new Error(`Password and confirm password doesn't match`);
     }
@@ -95,5 +95,19 @@ export class AuthModel {
     user.recoverDate = undefined;
     user.recoverHash = undefined;
     await user.save();
+
+    Mailer.send({
+      to: user.email,
+      subject: 'Recover password',
+      html: `
+      Hi ${user.name}, <br>
+
+      Your password has been redefined. <br>
+      If you done this action just ignore this email.<br><br>
+
+      If it wasn't you
+      <a href='http://localhost:3000/auth/reset?email=${user.email}'>click here</a>
+      to recover your password`,
+    });
   }
 }

@@ -53,16 +53,16 @@ export class AuthController {
     }
   }
 
-  recover(req: Request, res: Response<any>) {
-    res.render(`${views}/recover`, {
+  reset(req: Request, res: Response<any>) {
+    res.render(`${views}/reset`, {
       docTitle: 'Recover password',
     });
   }
 
-  async recoverPost(req: Request<any, any, { email: string }>, res: Response<any>) {
+  async resetPost(req: Request<any, any, { email: string }>, res: Response<any>) {
     try {
-      await model.recover(req.body.email);
-      res.render(`${views}/recoverSuccess`, {
+      await model.reset(req.body.email);
+      res.render(`${views}/resetSuccess`, {
         docTitle: 'Recover password',
       });
     } catch (error: any) {
@@ -71,12 +71,12 @@ export class AuthController {
     }
   }
 
-  async changePassword(req: Request<any, any, any, { hash: string }>, res: Response<any>) {
+  async resetPassword(req: Request<any, any, any, { hash: string }>, res: Response<any>) {
     try {
       const hash = req.params.hash;
       await model.checkHashToRecoverPassword(hash);
-      res.render(`${views}/changePassword`, {
-        docTitle: 'Change password',
+      res.render(`${views}/resetPassword`, {
+        docTitle: 'Reset password',
         hash
       });
     } catch (error: any) {
@@ -86,15 +86,15 @@ export class AuthController {
     }
   }
 
-  async changePasswordPost(req: Request<any, any, { password: string; confirm_password: string }>, res: Response<any>) {
+  async resetPasswordPost(req: Request<any, any, { password: string; confirm_password: string }>, res: Response<any>) {
     try {
-      await model.changePassword(req.params.hash, req.body);
+      await model.resetPassword(req.params.hash, req.body);
       req.flash('success', 'Password changed!');
       res.redirect(`/auth/login`);
     } catch (error: any) {
       console.error(error?.message ?? error);
       req.flash('error', error?.message ?? error);
-      res.redirect(`/auth/changePassword/${req.params.hash}`);
+      res.redirect(`/auth/reset/${req.params.hash}`);
     }
   }
 
