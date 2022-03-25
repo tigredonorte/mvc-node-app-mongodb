@@ -15,12 +15,6 @@ const userSchema = new Schema<IUser>({
     trim: true,
     lowercase: true,
     required: [true, 'Email required'],
-    validate: {
-      validator: function (email: string) {
-        return /^\w+([\.\+-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
-      },
-      message: 'Please enter a valid email',
-    },
     unique: true,
   },
   password: {
@@ -36,7 +30,7 @@ const userSchema = new Schema<IUser>({
 });
 
 userSchema.post('save', function (error: any, doc: any, next: any) {
-  const errorMessage = error.code === 11000 ? 'Authentication error!' : error.message;
+  const errorMessage = error.code === 11000 ? 'Email already exists' : error.message;
 
   if (errorMessage) {
     return next(new Error(errorMessage));

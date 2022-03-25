@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
+import { handleInputError } from '../../../utils/formErrorHandler';
 
-import { IUser, UsersModel } from '../user/user.model';
+import { IUser } from '../user/user.model';
 import { AuthModel } from './auth.model';
 
 const model = new AuthModel();
@@ -13,13 +14,16 @@ export class AuthController {
 
   login(req: Request<any>, res: Response<any>) {
     res.render(`${views}/login`, {
-      docTitle: 'Add User',
+      docTitle: 'Create Account',
       product: {},
     });
   }
 
   async loginPost(req: Request<any, any, { email: string; password: string }>, res: Response<any>) {
     try {
+      if (!handleInputError(req, res, { title: 'Create Account', page: 'login', views })) {
+        return;
+      }
       const token = await model.login(req.body);
       req.session.token = token;
       req.session.save(() => res.redirect('/'));
@@ -38,6 +42,9 @@ export class AuthController {
   async signupPost(req: Request<any, any, IUser>, res: Response<any>) {
     let redirectPage = '/auth/signup';
     try {
+      if (!handleInputError(req, res, { title: 'Signup', page: 'signup', views })) {
+        return;
+      }
       await model.signup(req.body);
       const token = await model.login(req.body);
       req.session.token = token;
@@ -102,4 +109,5 @@ export class AuthController {
     delete req.session.token;
     req.session.destroy(() => res.redirect(`/`));
   }
+
 }

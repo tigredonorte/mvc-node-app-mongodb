@@ -2,24 +2,15 @@
 
 <main class="card">
   <form class="col-md-5 p-lg-5 mx-auto my-5" method="POST" action="/auth/signup">
-    <div class="mb-3">
-      <label class="form-label" for="name">Name</label>
-      <input class="form-control" type="text" placeholder="Your name" name="name" />
-    </div>
-    <div class="mb-3">
-      <label class="form-label" for="email">Email</label>
-      <input class="form-control" type="email" placeholder="Your best email" name="email" />
-    </div>
-    <div class="mb-3">
-      <label class="form-label" for="password">Password</label>
-      <input class="form-control" type="password" placeholder="Password" name="password" />
-    </div>
+    <%- include("../../../../template/input", { field: { name: 'name', label: "Name", type: 'text', placeholder: "Your name" } }) %>
+    <%- include("../../../../template/input", { field: { name: 'email', label: "Email", type: 'email', placeholder: "Your best email" } }) %><%-
+    include("../../../../template/input", { field: { name: 'password', label: "Password", type: 'password', placeholder: "Password" } }) %>
+    <%- include("../../../../template/input", { field: { name: 'confirm_password', label: "Confirm Password", type: 'password',
+    placeholder: "Confirm Password" } }) %>
     <input type="hidden" value="<%- csrfToken %>" name="_csrf" />
     <button class="btn btn-primary start-50" type="submit">Signup</button>
-    <div style="margin-top: 20px; text-align: center;">
-      <div>
-        Already have an account? <a href="/auth/login"> Login </a>
-      </div>
+    <div style="margin-top: 20px; text-align: center">
+      <div>Already have an account? <a href="/auth/login"> Login </a></div>
     </div>
   </form>
 </main>

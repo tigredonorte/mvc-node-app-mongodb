@@ -1,0 +1,14 @@
+<div class="mb-3">
+  <label class="form-label" for="<%- field.name -%>"><%- field.label -%> </label>
+  <input
+    class="form-control <%- (errorMessage[field.name]) ? 'is-invalid' : '' %>"
+    type="<%- field.type -%>"
+    placeholder="<%- field.placeholder ?? field.label -%>"
+    name="<%- field.name -%>"
+    value="<%- field.value -%>"
+    <%- typeof field.extra !== 'undefined' ? {...field.extra} : undefined -%>
+  />
+  <% if (errorMessage[field.name]) { %>
+  <div class="invalid-feedback"><%- errorMessage[field.name].msg -%></div>
+  <% } %>
+</div>

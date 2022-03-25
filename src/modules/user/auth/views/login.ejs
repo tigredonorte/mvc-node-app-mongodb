@@ -2,26 +2,16 @@
 
 <main class="card">
   <form class="col-md-5 p-lg-5 mx-auto my-5" method="POST" action="/auth/login">
-    <div class="mb-3">
-      <label class="form-label" for="title">Email</label>
-      <input class="form-control" type="email" placeholder="Your best email" name="email" />
-    </div>
-    <div class="mb-3">
-      <label class="form-label" for="price">Password</label>
-      <input class="form-control" type="password" placeholder="Password" name="password" />
-    </div>
+    <%- include("../../../../template/input", { field: { name: 'email', label: "Email", type: 'email', placeholder: "Your best email" } })
+    %><%- include("../../../../template/input", { field: { name: 'password', label: "Password", type: 'password', placeholder: "Password" }
+    }) %>
     <input type="hidden" value="<%- csrfToken %>" name="_csrf" />
     <button class="btn btn-primary start-50" type="submit">Login</button>
-    <div style="margin-top: 20px; text-align: center;">
-      <div>
-        Don't have an account? <a class="" href="/auth/signup"> Signup </a>
-      </div>
-      <div style="margin-top: 10px;">
-        Have you forgotten your password? <a class="" href="/auth/reset"> Reset </a>
-      </div>
+    <div style="margin-top: 20px; text-align: center">
+      <div>Don't have an account? <a class="" href="/auth/signup"> Signup </a></div>
+      <div style="margin-top: 10px">Have you forgotten your password? <a class="" href="/auth/reset"> Reset </a></div>
     </div>
   </form>
-
 </main>
 
 <%- include ("../../../../template/footer") %>

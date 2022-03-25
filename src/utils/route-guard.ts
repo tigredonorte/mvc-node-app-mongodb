@@ -10,6 +10,7 @@ export const userGuard = async function (req: Request<any>, res: Response<any>, 
   res.locals.user = rawUser;
   const messages =  req.flash();
   res.locals.flashMessages = isEmpty(messages) ? null: messages;
+  res.locals.errorMessage = {};
   next();
 };
 

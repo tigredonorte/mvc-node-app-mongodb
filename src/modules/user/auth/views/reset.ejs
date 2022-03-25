@@ -2,14 +2,11 @@
 
 <main class="card">
   <form class="col-md-5 p-lg-5 mx-auto my-5" method="POST" action="/auth/reset">
-    <div class="mb-3">
-      <label class="form-label" for="title">Email</label>
-      <input class="form-control" type="email" placeholder="Your email" name="email" />
-    </div>
+    <%- include("../../../../template/input", { field: { name: 'email', label: "Email", type: 'email', placeholder: "Your best email" } })
+    %>
     <input type="hidden" value="<%- csrfToken %>" name="_csrf" />
     <button class="btn btn-primary start-50" type="submit">Recover</button>
   </form>
-
 </main>
 
 <%- include ("../../../../template/footer") %>
