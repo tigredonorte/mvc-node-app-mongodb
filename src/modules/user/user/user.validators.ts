@@ -1,24 +1,24 @@
 import { body } from 'express-validator/check';
 
-export const emailValidator = body('email').isEmail().withMessage('Please enter a valid email');
-const nameValidator = body('name').isLength({ min: 1 }).withMessage('You must fill your name');
+import { handleInputError } from '../../../utils/formErrorHandler';
 
-export const passwordValidator = body('password')
-  .isLength({ min: 8 })
-  .withMessage('Type at least 8 characters')
-  .matches(/\d/)
-  .withMessage('must contain a number')
-  .matches(/[a-z]/)
-  .withMessage('must contain at least one lowercase letter')
-  .matches(/[A-Z]/)
-  .withMessage('must contain at least one uppercase letter');
+export class UserValidator {
+  static password = body('password')
+    .isLength({ min: 8 })
+    .withMessage('Type at least 8 characters')
+    .matches(/\d/)
+    .withMessage('must contain a number')
+    .matches(/[a-z]/)
+    .withMessage('must contain at least one lowercase letter')
+    .matches(/[A-Z]/)
+    .withMessage('must contain at least one uppercase letter');
+  static email = body('email').isEmail().withMessage('Please enter a valid email');
+  static userName = body('name').isLength({ min: 1 }).withMessage('You must fill your name');
+  static valid = [UserValidator.password, UserValidator.email, UserValidator.userName];
+}
 
-export const confirmPasswordValidator = body('confirm_password').custom((value, { req }) => {
-  console.log('here');
-  if (value !== req.body.password) {
-    throw new Error(`Passwords have to match`);
-  }
-});
-
-export const SignupValidator = [passwordValidator, confirmPasswordValidator, nameValidator, emailValidator];
-export const LoginValidator = [passwordValidator, emailValidator];
+const views = 'modules/user/user/views';
+export class UserHandleError {
+  static add = handleInputError({ title: 'Add Products', page: 'add', views });
+  static edit = handleInputError({ title: 'Add Products', page: 'add', views });
+}

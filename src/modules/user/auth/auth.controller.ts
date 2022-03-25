@@ -21,9 +21,6 @@ export class AuthController {
 
   async loginPost(req: Request<any, any, { email: string; password: string }>, res: Response<any>) {
     try {
-      if (!handleInputError(req, res, { title: 'Create Account', page: 'login', views })) {
-        return;
-      }
       const token = await model.login(req.body);
       req.session.token = token;
       req.session.save(() => res.redirect('/'));
@@ -42,9 +39,6 @@ export class AuthController {
   async signupPost(req: Request<any, any, IUser>, res: Response<any>) {
     let redirectPage = '/auth/signup';
     try {
-      if (!handleInputError(req, res, { title: 'Signup', page: 'signup', views })) {
-        return;
-      }
       await model.signup(req.body);
       const token = await model.login(req.body);
       req.session.token = token;
@@ -69,9 +63,8 @@ export class AuthController {
   async resetPost(req: Request<any, any, { email: string }>, res: Response<any>) {
     try {
       await model.reset(req.body.email);
-      res.render(`${views}/resetSuccess`, {
-        docTitle: 'Recover password',
-      });
+      req.flash('success','An email has been sent to you! Click in the link to go to change password page');
+      res.redirect('/auth/login');
     } catch (error: any) {
       req.flash('error', error?.message ?? error);
       res.redirect('/auth/login');
@@ -93,7 +86,7 @@ export class AuthController {
     }
   }
 
-  async resetPasswordPost(req: Request<any, any, { password: string; confirm_password: string }>, res: Response<any>) {
+  async resetPasswordPost(req: Request<any, any, { password: string; }>, res: Response<any>) {
     try {
       await model.resetPassword(req.params.hash, req.body);
       req.flash('success', 'Password changed!');

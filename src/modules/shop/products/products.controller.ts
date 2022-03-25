@@ -36,10 +36,7 @@ export class ProductsController {
   }
 
   add(req: Request<any>, res: Response<any>) {
-    res.render(`${views}/add-product`, {
-      docTitle: 'Add Products',
-      product: {},
-    });
+    res.render(`${views}/add-product`, { docTitle: 'Add Products' });
   }
 
   async addPost(req: Request<any>, res: Response<any>) {
@@ -60,7 +57,7 @@ export class ProductsController {
       const product = await model.get(req.params.id);
       res.render(`${views}/add-product`, {
         docTitle: 'Add Products',
-        product,
+        body: product,
       });
     } catch (error: any) {
       console.error(error?.message ?? error);

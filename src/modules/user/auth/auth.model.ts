@@ -43,7 +43,7 @@ export class AuthModel {
   async reset(email: string): Promise<void> {
     const foundUser = await User.findOne({ email });
     if (!foundUser) {
-      throw new Error('Unable to recover this account!');
+      throw new Error('Email not found');
     }
 
     const dt = new Date();
@@ -85,11 +85,7 @@ export class AuthModel {
     return user;
   }
 
-  async resetPassword(recoverHash: string, data: { password: string; confirm_password: string }) {
-    if (data.password !== data.confirm_password) {
-      throw new Error(`Password and confirm password doesn't match`);
-    }
-
+  async resetPassword(recoverHash: string, data: { password: string; }) {
     const user = await this.checkHashToRecoverPassword(recoverHash);
     user.password = await AuthModel.usersModel.encryptPassword(data.password);
     user.recoverDate = undefined;

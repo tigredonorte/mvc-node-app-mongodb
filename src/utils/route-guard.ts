@@ -11,6 +11,7 @@ export const userGuard = async function (req: Request<any>, res: Response<any>, 
   const messages =  req.flash();
   res.locals.flashMessages = isEmpty(messages) ? null: messages;
   res.locals.errorMessage = {};
+  res.locals.body = req.body;
   next();
 };
 

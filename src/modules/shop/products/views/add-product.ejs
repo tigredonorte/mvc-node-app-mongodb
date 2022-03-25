@@ -1,10 +1,22 @@
 <%- include ("../../../../template/main") %> <%- include ("../../../../template/menu") %>
 
 <main>
-  <form class="col-md-5 p-lg-5 mx-auto my-5" method="POST" action="/admin/shop/product/<%- product._id ? `edit/${product._id}` : 'add' -%>">
-    <%- include("../../../../template/input", { field: { name: 'title', label: "Product name", type: 'text', value: product.title } }) %>
-    <%- include("../../../../template/input", { field: { name: 'price', label: "Price", type: 'number', value: product.price, extra: { min:
-    '.01', step: 'any' } } }) %>
+  <form class="col-md-5 p-lg-5 mx-auto my-5" method="POST" action="/admin/shop/product/<%- body._id ? `edit/${body._id}` : 'add' -%>">
+    <%-
+      include("../../../../template/input", {
+        field: { name: 'title', label: "Product name", type: 'text' }
+      })
+    %>
+    <%-
+      include("../../../../template/input", {
+        field: { name: 'price', label: "Price", type: 'number', extra: { min: '.01', step: 'any' } }
+      })
+    %>
+    <%-
+      include("../../../../template/input", {
+        field: { name: 'img', label: "Image", type: 'url' }
+      })
+    %>
     <div class="mb-3">
       <label class="form-label" for="description">Description</label>
       <textarea
@@ -13,17 +25,14 @@
         cols="30"
         rows="8"
         placeholder="Description"
-      >
-        <%- product.description -%>
-      </textarea>
+      ><%- body.description -%></textarea>
 
       <% if (errorMessage['description']) { %>
       <div class="invalid-feedback"><%- errorMessage['description'].msg -%></div>
       <% } %>
     </div>
-    <%- include("../../../../template/input", { field: { name: 'img', label: "Image", type: 'url', value: product.title } }) %>
     <input type="hidden" value="<%- csrfToken %>" name="_csrf" />
-    <button class="btn btn-primary start-50" type="submit"><%- product._id ? "Edit Product" : "Create Product" -%></button>
+    <button class="btn btn-primary start-50" type="submit"><%- body._id ? "Edit Product" : "Create Product" -%></button>
   </form>
 </main>
 

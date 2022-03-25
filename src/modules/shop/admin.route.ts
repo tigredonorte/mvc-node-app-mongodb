@@ -7,9 +7,9 @@ const productsController = new ProductsController();
 
 // products
 AdminRoutes.get('/product/add', productsController.add);
-AdminRoutes.post('/product/add', validator.valid, errHandler.add, productsController.addPost);
+AdminRoutes.post('/product/add', validator.valid, productsController.addPost);
 AdminRoutes.get('/product/edit/:id', productsController.edit);
-AdminRoutes.post('/product/edit/:id', validator.valid, errHandler.edit, productsController.editPatch);
+AdminRoutes.post('/product/edit/:id', validator.valid, productsController.editPatch);
 AdminRoutes.get('/product/delete/:id', productsController.delete);
 AdminRoutes.get('/', productsController.list);
 

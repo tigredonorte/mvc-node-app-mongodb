@@ -1,21 +1,20 @@
 import express from 'express';
 
 import { AuthController } from './auth/auth.controller';
-import { confirmPasswordValidator, emailValidator, LoginValidator, passwordValidator, SignupValidator } from './user/user.validators';
+import { AuthValidator } from './auth/auth.validators';
 
 const AuthRoutes = express.Router();
 const authController = new AuthController();
 
-
 // user authentication
 AuthRoutes.get('/login', authController.login);
-AuthRoutes.post('/login', LoginValidator, authController.loginPost);
+AuthRoutes.post('/login', AuthValidator.login, authController.loginPost);
 AuthRoutes.get('/signup', authController.signup);
-AuthRoutes.post('/signup', SignupValidator, authController.signupPost);
+AuthRoutes.post('/signup', AuthValidator.signup, authController.signupPost);
 AuthRoutes.get('/reset/:hash', authController.resetPassword);
-AuthRoutes.post('/reset/:hash', [passwordValidator, confirmPasswordValidator], authController.resetPasswordPost);
+AuthRoutes.post('/reset/:hash', AuthValidator.reset, authController.resetPasswordPost);
 AuthRoutes.get('/reset', authController.reset);
-AuthRoutes.post('/reset', emailValidator, authController.resetPost);
+AuthRoutes.post('/reset', AuthValidator.email(false), authController.resetPost);
 AuthRoutes.get('/logout', authController.logout);
 AuthRoutes.get('/', authController.index);
 

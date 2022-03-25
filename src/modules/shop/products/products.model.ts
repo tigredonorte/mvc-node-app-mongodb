@@ -69,7 +69,6 @@ export class ProductsModel {
     if (!product) {
       throw new Error('Not Authorized!');
     }
-    console.log(product);
   }
 
   checkId(productId: string) {

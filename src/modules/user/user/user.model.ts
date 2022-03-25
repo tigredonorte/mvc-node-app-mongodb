@@ -29,15 +29,6 @@ const userSchema = new Schema<IUser>({
   recoverHash: String
 });
 
-userSchema.post('save', function (error: any, doc: any, next: any) {
-  const errorMessage = error.code === 11000 ? 'Email already exists' : error.message;
-
-  if (errorMessage) {
-    return next(new Error(errorMessage));
-  }
-  next();
-});
-
 export const User = mongoose.model('user', userSchema);
 
 export class UsersModel {
@@ -53,6 +44,10 @@ export class UsersModel {
   async get(id: string): Promise<IUser | null> {
     this.checkId(id);
     return (await User.findById({ _id: id })) as IUser;
+  }
+
+  async getByEmail(email: string): Promise<IUser | null> {
+    return (await User.exists({ email })) as IUser;
   }
 
   async add(user: IUser): Promise<void> {

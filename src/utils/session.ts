@@ -14,7 +14,12 @@ export class Session {
       secret: process.env.SECRET || '',
       resave: false,
       saveUninitialized: false,
-      cookie: { secure: process.env.NODE_ENV !== 'development', sameSite: true, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 },
+      cookie: {
+        secure: process.env.NODE_ENV !== 'development',
+        sameSite: true,
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24,
+      },
     });
   }
 }
