@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { type } from 'os';
 import { isEmpty } from 'ramda';
 
 import { Cookie } from './cookies';
@@ -37,4 +38,16 @@ export const nonAuthRouteGuard = (exceptions: string[]) =>
       /** silent fail */
     }
     next();
+  };
+
+export const errorGuard = (route: (req: any, res: any, next: any) => void) =>
+  async function (req: Request<any>, res: Response<any>, next: NextFunction) {
+    try {
+      if (typeof route !== 'function') {
+        throw new Error('route is not a function!')
+      }
+      await route(req, res, next);
+    } catch (error) {
+      next(error);
+    }
   };

@@ -63,7 +63,7 @@ export class AuthController {
   async resetPost(req: Request<any, any, { email: string }>, res: Response<any>) {
     try {
       await model.reset(req.body.email);
-      req.flash('success','An email has been sent to you! Click in the link to go to change password page');
+      req.flash('success', 'An email has been sent to you! Click in the link to go to change password page');
       res.redirect('/auth/login');
     } catch (error: any) {
       req.flash('error', error?.message ?? error);
@@ -77,7 +77,7 @@ export class AuthController {
       await model.checkHashToRecoverPassword(hash);
       res.render(`${views}/resetPassword`, {
         docTitle: 'Reset password',
-        hash
+        hash,
       });
     } catch (error: any) {
       console.error(error?.message ?? error);
@@ -86,7 +86,7 @@ export class AuthController {
     }
   }
 
-  async resetPasswordPost(req: Request<any, any, { password: string; }>, res: Response<any>) {
+  async resetPasswordPost(req: Request<any, any, { password: string }>, res: Response<any>) {
     try {
       await model.resetPassword(req.params.hash, req.body);
       req.flash('success', 'Password changed!');
@@ -102,5 +102,4 @@ export class AuthController {
     delete req.session.token;
     req.session.destroy(() => res.redirect(`/`));
   }
-
 }

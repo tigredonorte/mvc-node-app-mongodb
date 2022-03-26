@@ -1,0 +1,17 @@
+<%- include ("../../../template/main") %> <%- include ("../../../template/menu") %>
+
+<main>
+  <div class="page-wrap d-flex flex-row align-items-center">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 text-center">
+          <span class="display-1 d-block">500</span>
+          <div class="mb-4 lead"><%- typeof docContent !== 'undefined' ? docContent : 'Something went wrong' %></div>
+          <a class="btn btn-link" href="/shop">Back to Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include ("../../../template/footer") %>
