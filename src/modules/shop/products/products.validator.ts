@@ -1,6 +1,6 @@
 import { body } from 'express-validator/check';
 
-import { handleInputError } from '../../../utils/formErrorHandler';
+import { handleInputError } from '../../../utils/middlewares/errorHandler';
 
 const views = 'modules/shop/products/views';
 export class ProductsHandleError {

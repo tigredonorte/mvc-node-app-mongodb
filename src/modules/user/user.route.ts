@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { errorGuard } from '../../utils/route-guard';
+import { errorGuard } from '../../utils/middlewares/route-guard';
 import { UserController } from './user/user.controller';
 
 const UserRoutes = express.Router();

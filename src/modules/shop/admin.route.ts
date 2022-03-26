@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { errorGuard } from '../../utils/route-guard';
+import { errorGuard } from '../../utils/middlewares/route-guard';
 import { ProductsController } from './products/products.controller';
 import { ProductsValidator as validator } from './products/products.validator';
 

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { handleInputError } from '../../../utils/formErrorHandler';
+import { handleInputError } from '../../../utils/middlewares/errorHandler';
 
 import { IUser } from '../user/user.model';
 import { AuthModel } from './auth.model';

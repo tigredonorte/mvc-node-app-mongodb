@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { authRouteGuard, errorGuard } from '../../utils/route-guard';
+import { authRouteGuard, errorGuard } from '../../utils/middlewares/route-guard';
 import { CartController } from './cart/cart.controller';
 import { OrdersController } from './orders/orders.controller';
 import { ProductsController } from './products/products.controller';

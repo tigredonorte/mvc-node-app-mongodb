@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { body } from 'express-validator/check';
 
-import { handleInputError } from '../../../utils/formErrorHandler';
+import { handleInputError } from '../../../utils/middlewares/errorHandler';
 import { UsersModel } from '../user/user.model';
 
 const userModel = new UsersModel();

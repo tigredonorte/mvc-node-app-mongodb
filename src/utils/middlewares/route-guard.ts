@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import { type } from 'os';
 import { isEmpty } from 'ramda';
 
-import { Cookie } from './cookies';
-import { Token } from './token';
+import { Cookie } from '../cookies';
+import { Token } from '../token';
 
 export const userGuard = async function (req: Request<any>, res: Response<any>, next: NextFunction) {
   req._cookies = Cookie.parseCookies(req);
@@ -20,11 +20,11 @@ export const authRouteGuard = (exceptions: string[]) =>
   async function (req: Request<any>, res: Response<any>, next: NextFunction) {
     try {
       if (!res.locals.user) {
-        return res.redirect('/auth/login');
+        return res.status(401).redirect('/auth/login');
       }
       next();
     } catch (error) {
-      return res.redirect('/auth/login');
+      return res.status(401).redirect('/auth/login');
     }
   };
 

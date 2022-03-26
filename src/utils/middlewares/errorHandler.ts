@@ -16,3 +16,11 @@ export const handleInputError =
       errorMessage: errors.mapped(),
     });
   };
+
+export const unhandledError = (err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err);
+  const msg = err.message ? err.message : null;
+  res.status(500).render('modules/index/views/500', { docTitle: 'Internal server error', docContent: msg });
+};
+
+export const notFoundError = (req: Request, res: Response) => res.status(404).render('modules/index/views/404', { docTitle: 'Page not found' });

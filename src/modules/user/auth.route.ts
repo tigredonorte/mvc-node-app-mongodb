@@ -1,5 +1,5 @@
 import express from 'express';
-import { errorGuard } from '../../utils/route-guard';
+import { errorGuard } from '../../utils/middlewares/route-guard';
 
 import { AuthController } from './auth/auth.controller';
 import { AuthValidator } from './auth/auth.validators';

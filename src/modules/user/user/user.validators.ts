@@ -1,6 +1,6 @@
 import { body } from 'express-validator/check';
 
-import { handleInputError } from '../../../utils/formErrorHandler';
+import { handleInputError } from '../../../utils/middlewares/errorHandler';
 
 export class UserValidator {
   static password = body('password')

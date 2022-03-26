@@ -3,7 +3,7 @@ import flash from 'connect-flash';
 import connectLiveReload from 'connect-livereload';
 import cookieParser from 'cookie-parser';
 import csurf from 'csurf';
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import livereload from 'livereload';
 import path from 'path';
 
@@ -12,8 +12,9 @@ import { ShopRoutes } from './modules/shop/shop.route';
 import { AuthRoutes } from './modules/user/auth.route';
 import { UserRoutes } from './modules/user/user.route';
 import { Database } from './utils/database';
-import { authRouteGuard, nonAuthRouteGuard, userGuard } from './utils/route-guard';
-import { secureMiddleware } from './utils/secureApp';
+import { notFoundError, unhandledError } from './utils/middlewares/errorHandler';
+import { authRouteGuard, nonAuthRouteGuard, userGuard } from './utils/middlewares/route-guard';
+import { secureMiddleware } from './utils/middlewares/secureApp';
 import { Session } from './utils/session';
 
 Database.init(() => {});
@@ -52,16 +53,12 @@ app.use('/auth', [nonAuthRouteGuard(['/logout']), AuthRoutes]);
 app.use('/user', [authRouteGuard([]), UserRoutes]);
 app.use('/admin/shop', [authRouteGuard([]), AdminRoutes]);
 app.use('/shop', ShopRoutes);
-app.get('/', (req, res) => res.redirect('/shop'));
+app.get('/', (_, res) => res.redirect('/shop'));
 
 // not found
-app.use((req, res) => res.status(404).render('modules/index/views/404', { docTitle: 'Page not found' }));
+app.use(notFoundError);
 
 // error handling
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error(err);
-  const msg = err.message ? err.message : null;
-  res.status(500).render('modules/index/views/500', { docTitle: 'Internal server error', docContent: msg });
-});
+app.use(unhandledError);
 
 app.listen('3000', () => console.log('\nRunning on port 3000\n'));
