@@ -17,7 +17,7 @@
         field: { name: 'price', label: "Price", type: 'number', extra: { min: '.01', step: 'any' } }
       })
     %>
-    <% if (body.img) { %>
+    <% if (body.img && typeof body.img === 'string') { %>
     <div style="height: 200px;">
       <img style="height: 200px;" src="/images/products/<%- body.img -%>">
     </div>

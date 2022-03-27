@@ -6,10 +6,14 @@ const views = 'modules/shop/products/views';
 
 export class ProductsController {
   async list(req: Request<any>, res: Response<any>) {
+    const page = Number(req.query.page ?? 1).valueOf();
     const id = req.baseUrl.match('admin') ? res.locals.user._id : undefined;
     let products: IProduct[] = [];
+    let totalPages = 0;
     try {
-      products = await model.list(id);
+      const data = await model.paginate(id, page);
+      products = data.products;
+      totalPages = data.total;
     } catch (error) {
       /**silent fail */
     }
@@ -17,6 +21,8 @@ export class ProductsController {
       isAdmin: !!id,
       docTitle: 'My shop',
       products,
+      page,
+      totalPages,
       hasProducts: products.length > 0,
     });
   }

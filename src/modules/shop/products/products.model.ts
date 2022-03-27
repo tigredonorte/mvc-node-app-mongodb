@@ -38,10 +38,22 @@ const productSchema = new Schema<IProduct>({
 export const Product = mongoose.model('product', productSchema);
 
 export class ProductsModel {
+
+  async paginate(userId: string, page: number, itemsPerPage = 3): Promise<{ products: IProduct[]; total: number }> {
+    const where = userId ? { userId } : {};
+    const total = await Product.countDocuments(where);
+    const products = await Product.find(where)
+      .skip((page - 1) * itemsPerPage)
+      .limit(itemsPerPage)
+      .select(['title', 'price', 'img'])
+      .populate('userId', ['name']);
+    return { products, total: Math.ceil(total / itemsPerPage) };
+  }
+
   async list(userId?: string): Promise<IProduct[]> {
     return await Product.find(userId ? { userId } : {})
-        .select(['title', 'price', 'img'])
-        .populate('userId', ['name'])
+      .select(['title', 'price', 'img'])
+      .populate('userId', ['name']);
   }
 
   async get(productId: string): Promise<IProduct> {
