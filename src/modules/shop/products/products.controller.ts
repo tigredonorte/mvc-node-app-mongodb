@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-
 import { IProduct, ProductsModel } from './products.model';
 
 const model = new ProductsModel();
@@ -11,7 +10,9 @@ export class ProductsController {
     let products: IProduct[] = [];
     try {
       products = await model.list(id);
-    } catch (error) { /**silent fail */}
+    } catch (error) {
+      /**silent fail */
+    }
     res.render(`${views}/index`, {
       isAdmin: !!id,
       docTitle: 'My shop',
@@ -45,9 +46,12 @@ export class ProductsController {
       req.flash('success', 'Product added!');
       res.redirect('/admin/shop/');
     } catch (error: any) {
-      console.error(error?.message ?? error);
-      req.flash('error', error?.message ?? error);
-      res.redirect('/admin/shop/product/add');
+      res.render(`${views}/add-product`, {
+        docTitle: 'Add Products',
+        flashMessages: {
+          error: [error?.message ?? error],
+        },
+      });
     }
   }
 
@@ -68,8 +72,8 @@ export class ProductsController {
 
   async editPatch(req: Request<any>, res: Response<any>) {
     try {
-      await model.isAuthorized(req.params.id, res.locals.user._id);
-      await model.edit(req.params.id, req.body);
+      const oldProduct = await model.isAuthorized(req.params.id, res.locals.user._id);
+      await model.edit(req.params.id, req.body, oldProduct);
       req.flash('success', 'Product changed!');
     } catch (error: any) {
       req.flash('error', error?.message ?? error);
@@ -79,8 +83,8 @@ export class ProductsController {
 
   async delete(req: Request<any>, res: Response<any>) {
     try {
-      await model.isAuthorized(req.params.id, res.locals.user._id);
-      await model.delete(req.params.id);
+      const product = await model.isAuthorized(req.params.id, res.locals.user._id);
+      await model.delete(req.params.id, product);
       req.flash('success', 'Product deleted!');
     } catch (error: any) {
       req.flash('error', error?.message ?? error);

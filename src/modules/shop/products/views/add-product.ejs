@@ -1,7 +1,12 @@
 <%- include ("../../../../template/main") %> <%- include ("../../../../template/menu") %>
 
 <main>
-  <form class="col-md-5 p-lg-5 mx-auto my-5" method="POST" action="/admin/shop/product/<%- body._id ? `edit/${body._id}` : 'add' -%>">
+  <form
+    class="col-md-5 p-lg-5 mx-auto my-5"
+    method="POST"
+    action="/admin/shop/product/<%- body._id ? `edit/${body._id}` : 'add' -%>?_csrf=<%- csrfToken -%> "
+    enctype="multipart/form-data"
+  >
     <%-
       include("../../../../template/input", {
         field: { name: 'title', label: "Product name", type: 'text' }
@@ -12,9 +17,14 @@
         field: { name: 'price', label: "Price", type: 'number', extra: { min: '.01', step: 'any' } }
       })
     %>
+    <% if (body.img) { %>
+    <div style="height: 200px;">
+      <img style="height: 200px;" src="/images/products/<%- body.img -%>">
+    </div>
+    <% } %>
     <%-
       include("../../../../template/input", {
-        field: { name: 'img', label: "Image", type: 'url' }
+        field: { name: 'img', label: "Image", type: 'file' }
       })
     %>
     <div class="mb-3">
@@ -31,7 +41,7 @@
       <div class="invalid-feedback"><%- errorMessage['description'].msg -%></div>
       <% } %>
     </div>
-    <input type="hidden" value="<%- csrfToken %>" name="_csrf" />
+    <!-- <input type="hidden" value="<%- csrfToken %>" name="_csrf" /> -->
     <button class="btn btn-primary start-50" type="submit"><%- body._id ? "Edit Product" : "Create Product" -%></button>
   </form>
 </main>

@@ -13,6 +13,7 @@ import { AuthRoutes } from './modules/user/auth.route';
 import { UserRoutes } from './modules/user/user.route';
 import { Database } from './utils/database';
 import { notFoundError, unhandledError } from './utils/middlewares/errorHandler';
+import { parseMultipart } from './utils/middlewares/fileUpload';
 import { authRouteGuard, nonAuthRouteGuard, userGuard } from './utils/middlewares/route-guard';
 import { secureMiddleware } from './utils/middlewares/secureApp';
 import { Session } from './utils/session';
@@ -45,6 +46,7 @@ app.use(cookieParser());
 app.use(Session.getSessionMiddleware());
 app.use(csurf({}));
 app.use(flash());
+app.use(parseMultipart);
 app.use(secureMiddleware);
 app.use(userGuard);
 

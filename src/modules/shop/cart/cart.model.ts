@@ -78,6 +78,9 @@ export class CartModel {
   async increase(productId: string, userId: string): Promise<void> {
     this.checkId(productId, userId);
     const product = await this.productModel.get(productId);
+    if (!product) {
+      return await this.drop(productId, userId);
+    }
     const cart = new Cart(await this.getByUserId(userId));
     if (!cart?.products?.get(productId)) {
       await Cart.updateOne(
@@ -102,6 +105,9 @@ export class CartModel {
   async decrease(productId: string, userId: string): Promise<void> {
     this.checkId(productId, userId);
     const product = await this.productModel.get(productId);
+    if (!product) {
+      return await this.drop(productId, userId);
+    }
     const cart = await this.getByUserId(userId);
     if (cart.products.get(productId)?.amount === 1) {
       return await this.drop(productId, userId);
@@ -112,12 +118,17 @@ export class CartModel {
 
   async drop(productId: string, userId: string): Promise<void> {
     this.checkId(productId, userId);
-    const product = await this.productModel.get(productId);
+    let product = await this.productModel.get(productId);
+    if (!product) {
+      const cart = await this.getByUserId(userId);
+      product = cart.products.get(productId)?.product as IProduct;
+    }
+
     await Cart.updateOne(
       { _id: new ObjectId(userId) },
       {
         $inc: {
-          total: -product.price,
+          total: -(product?.price ?? 0),
         },
         $unset: {
           [`products.${productId}`]: '',

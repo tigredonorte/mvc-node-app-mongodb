@@ -11,7 +11,7 @@
       <div><%- order.status -%></div>
       <div>
         <% order.products.forEach(orderProduct => { %>
-        <img src="<%- orderProduct.product.img -%>">
+        <img src="/images/products/<%- orderProduct.product.img -%>">
         <h2><%- orderProduct.product.title -%></h2>
         <div>
           <div><%- orderProduct.product.price -%></div>

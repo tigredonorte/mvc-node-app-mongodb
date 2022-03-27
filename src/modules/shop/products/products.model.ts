@@ -1,5 +1,5 @@
-import { ObjectId } from 'mongodb';
 import mongoose, { Schema } from 'mongoose';
+import fs from 'fs/promises';
 
 import { User } from '../../user/user/user.model';
 
@@ -41,7 +41,7 @@ export class ProductsModel {
   async list(userId?: string): Promise<IProduct[]> {
     return await Product.find(userId ? { userId } : {})
         .select(['title', 'price', 'img'])
-        .populate('userId', ['name']);
+        .populate('userId', ['name'])
   }
 
   async get(productId: string): Promise<IProduct> {
@@ -54,21 +54,37 @@ export class ProductsModel {
     await prod.save();
   }
 
-  async edit(productId: string, product: IProduct): Promise<void> {
+  async edit(productId: string, product: IProduct, oldProduct: IProduct): Promise<void> {
     this.checkId(productId);
+    if (oldProduct.title !== product.title) {
+      if (!product.img) {
+        const img = product.title.toLowerCase().split(' ').join('-');
+        const ext = oldProduct.img.split('.').pop();
+        await fs.rename(`public/images/products/${oldProduct.img}`, `public/images/products/${img}.${ext}`);
+        product.img = `${img}.${ext}`;
+      } else {
+        this.deleteFile(product);
+      }
+    }
     await Product.updateOne({ _id: productId }, { $set: product });
   }
 
-  async delete(productId: string): Promise<void> {
+  async delete(productId: string, product: IProduct): Promise<void> {
     this.checkId(productId);
+    this.deleteFile(product);
     await Product.findByIdAndDelete(productId);
   }
 
-  async isAuthorized(productId: string, userId: string) {
+  async isAuthorized(productId: string, userId: string): Promise<IProduct> {
     const product = await Product.findOne({ _id: productId, userId });
     if (!product) {
       throw new Error('Not Authorized!');
     }
+    return product;
+  }
+
+  async deleteFile(product: IProduct) {
+    await fs.unlink(`public/images/products/${product.img}`);
   }
 
   checkId(productId: string) {

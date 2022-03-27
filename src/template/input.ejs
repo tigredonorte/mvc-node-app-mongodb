@@ -5,7 +5,9 @@
     type="<%- field.type -%>"
     placeholder="<%- field.placeholder ?? field.label -%>"
     name="<%- field.name -%>"
-    value="<%- typeof body !== undefined && typeof body[field.name] !== undefined ? body[field.name] : '' -%>"
+    value="<%- field.type !== 'file' && typeof body !== undefined && typeof body[field.name] !== undefined
+      ? body[field.name]
+      : '' -%>"
     <%- typeof field.extra !== 'undefined' ? {...field.extra} : undefined -%>
   />
   <% if (errorMessage[field.name]) { %>
