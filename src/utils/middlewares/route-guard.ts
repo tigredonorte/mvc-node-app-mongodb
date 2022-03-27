@@ -9,24 +9,19 @@ export const userGuard = async function (req: Request<any>, res: Response<any>, 
   req._cookies = Cookie.parseCookies(req);
   const rawUser = req.session.token ? Token.getToken(req.session.token) : null;
   res.locals.user = rawUser;
-  const messages =  req.flash();
-  res.locals.flashMessages = isEmpty(messages) ? null: messages;
+  const messages = req.flash();
+  res.locals.flashMessages = isEmpty(messages) ? null : messages;
   res.locals.errorMessage = {};
   res.locals.body = req.body;
   next();
 };
 
-export const authRouteGuard = (exceptions: string[]) =>
-  async function (req: Request<any>, res: Response<any>, next: NextFunction) {
-    try {
-      if (!res.locals.user) {
-        return res.status(401).redirect('/auth/login');
-      }
-      next();
-    } catch (error) {
-      return res.status(401).redirect('/auth/login');
-    }
-  };
+export const authRouteGuard = (req: Request<any>, res: Response<any>, next: NextFunction) => {
+  if (!res.locals.user) {
+    return res.status(401).redirect('/auth/login');
+  }
+  next();
+}
 
 export const nonAuthRouteGuard = (exceptions: string[]) =>
   async function (req: Request<any>, res: Response<any>, next: NextFunction) {
@@ -44,7 +39,7 @@ export const errorGuard = (route: (req: any, res: any, next: any) => void) =>
   async function (req: Request<any>, res: Response<any>, next: NextFunction) {
     try {
       if (typeof route !== 'function') {
-        throw new Error('route is not a function!')
+        throw new Error('route is not a function!');
       }
       await route(req, res, next);
     } catch (error) {

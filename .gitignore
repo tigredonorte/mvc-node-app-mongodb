@@ -4,3 +4,5 @@ data
 .env
 public/images/products/*
 !public/images/products/.gitkeep
+invoices/*
+!invoices/.gitkeep

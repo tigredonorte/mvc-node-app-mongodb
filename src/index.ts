@@ -52,8 +52,8 @@ app.use(userGuard);
 
 // routes
 app.use('/auth', [nonAuthRouteGuard(['/logout']), AuthRoutes]);
-app.use('/user', [authRouteGuard([]), UserRoutes]);
-app.use('/admin/shop', [authRouteGuard([]), AdminRoutes]);
+app.use('/user', [authRouteGuard, UserRoutes]);
+app.use('/admin/shop', [authRouteGuard, AdminRoutes]);
 app.use('/shop', ShopRoutes);
 app.get('/', (_, res) => res.redirect('/shop'));
 

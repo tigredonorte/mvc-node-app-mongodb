@@ -15,14 +15,15 @@ ShopRoutes.get('/', errorGuard(productsController.list));
 ShopRoutes.get('/product/:id', errorGuard(productsController.show));
 
 // cart
-ShopRoutes.get('/cart', authRouteGuard([]), errorGuard(cartController.list ));
-ShopRoutes.post('/cart/increase', authRouteGuard([]), errorGuard(cartController.increase ));
-ShopRoutes.post('/cart/decrease', authRouteGuard([]), errorGuard(cartController.decrease ));
-ShopRoutes.post('/cart/delete', authRouteGuard([]), errorGuard(cartController.delete ));
+ShopRoutes.get('/cart', authRouteGuard, errorGuard(cartController.list));
+ShopRoutes.post('/cart/increase', authRouteGuard, errorGuard(cartController.increase));
+ShopRoutes.post('/cart/decrease', authRouteGuard, errorGuard(cartController.decrease));
+ShopRoutes.post('/cart/delete', authRouteGuard, errorGuard(cartController.delete));
 
 // orders
-ShopRoutes.get('/orders', authRouteGuard([]), errorGuard(ordersController.list ));
-ShopRoutes.get('/orders/add', authRouteGuard([]), errorGuard(ordersController.add ));
-ShopRoutes.post('/orders/edit/:id', authRouteGuard([]), errorGuard(ordersController.edit ));
+ShopRoutes.get('/orders', authRouteGuard, errorGuard(ordersController.list));
+ShopRoutes.get('/orders/invoice/:orderId', authRouteGuard, errorGuard(ordersController.invoice));
+ShopRoutes.get('/orders/add', authRouteGuard, errorGuard(ordersController.add));
+ShopRoutes.post('/orders/edit/:id', authRouteGuard, errorGuard(ordersController.edit));
 
 export { ShopRoutes };

@@ -4,6 +4,7 @@ import { User } from '../../user/user/user.model';
 import { cartItemSchema, CartModel, ICart } from '../cart/cart.model';
 
 export interface IOrder extends ICart {
+  _id?: Schema.Types.ObjectId;
   userId: Schema.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
