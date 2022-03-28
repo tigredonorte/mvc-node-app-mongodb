@@ -22,6 +22,9 @@ ShopRoutes.delete('/cart/:productId', authRouteGuard, errorGuard(cartController.
 
 // orders
 ShopRoutes.get('/orders', authRouteGuard, errorGuard(ordersController.list));
+ShopRoutes.get('/orders/checkout/success', authRouteGuard, errorGuard(ordersController.success));
+ShopRoutes.get('/orders/checkout/cancel', authRouteGuard, errorGuard(ordersController.cancel));
+ShopRoutes.get('/orders/checkout', authRouteGuard, errorGuard(ordersController.checkout));
 ShopRoutes.get('/orders/invoice/:orderId', authRouteGuard, errorGuard(ordersController.invoice));
 ShopRoutes.get('/orders/add', authRouteGuard, errorGuard(ordersController.add));
 ShopRoutes.post('/orders/edit/:id', authRouteGuard, errorGuard(ordersController.edit));

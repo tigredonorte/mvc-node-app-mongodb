@@ -20,7 +20,7 @@ export class AuthModel {
     }
     return Token.sign(
       {
-        _id: foundUser._id.toString(),
+        _id: foundUser._id?.toString(),
         email: foundUser.email,
         name: foundUser.name,
       },

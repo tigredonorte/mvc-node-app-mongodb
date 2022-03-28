@@ -13,12 +13,12 @@ export class Session {
       store,
       secret: process.env.SECRET || '',
       resave: false,
-      saveUninitialized: false,
+      saveUninitialized: true,
       cookie: {
         secure: process.env.NODE_ENV !== 'development',
-        sameSite: true,
+        sameSite: 'lax',
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24,
+        maxAge: 1000 * 60 * 60 * 24
       },
     });
   }

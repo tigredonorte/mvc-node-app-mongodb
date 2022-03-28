@@ -2,11 +2,14 @@ import bcrypt from 'bcrypt';
 import mongoose, { Schema } from 'mongoose';
 
 export interface IUser {
+  _id?: string;
   email: string;
   password: string;
   name: string;
   recoverDate?: Date,
   recoverHash?: string,
+  paymentName?: 'stripe';
+  paymentKey?: string;
 }
 
 const userSchema = new Schema<IUser>({
@@ -26,7 +29,9 @@ const userSchema = new Schema<IUser>({
     required: true,
   },
   recoverDate: Date,
-  recoverHash: String
+  recoverHash: String,
+  paymentName: String,
+  paymentKey: String
 });
 
 export const User = mongoose.model('user', userSchema);

@@ -44,6 +44,34 @@ export class OrdersController {
     }
   }
 
+  async checkout(req: Request<any>, res: Response<any>) {
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const cart = await model.getCheckoutData(res.locals.user._id);
+    const sessionId = await model.checkoutOutside(res.locals.user._id, cart, baseUrl);
+    res.render(`${views}checkout`, {
+      docTitle: 'Checkout',
+      cart,
+      stripeKey: process.env.STRIPE_KEY,
+      sessionId,
+    });
+  }
+
+  async success(req: Request<any>, res: Response<any>) {
+    try {
+      const sessionId: string = req.query.session_id as string;
+      await model.validate(sessionId);
+      await model.add(res.locals.user._id);
+      res.redirect('/shop/orders');
+    } catch (error: any) {
+      req.flash('error', error?.message ?? error);
+      res.redirect('/shop/orders/checkout');
+    }
+  }
+
+  async cancel(req: Request<any>, res: Response<any>) {
+    res.redirect('/shop/orders/checkout');
+  }
+
   async invoice(req: Request<any>, res: Response<any>) {
     const orderId = req.params.orderId;
     const controller = new OrdersController();
