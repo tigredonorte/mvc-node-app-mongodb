@@ -91,10 +91,9 @@ export class ProductsController {
     try {
       const product = await model.isAuthorized(req.params.id, res.locals.user._id);
       await model.delete(req.params.id, product);
-      req.flash('success', 'Product deleted!');
+      res.json({'message' : 'Product deleted!'});
     } catch (error: any) {
-      req.flash('error', error?.message ?? error);
+      res.status(500).json({'error' : error?.message ?? error});
     }
-    res.redirect('/admin/shop/');
   }
 }

@@ -89,19 +89,18 @@
 
 <body>
 
-<% if(flashMessages) { %>
-  <div style="margin: 60px 10px 0 10px;">
-    <%
-        for ( const i in flashMessages ) {
-          const _class = (i === 'error') ? 'danger' : i;
-          flashMessages[i].forEach(element => {
-            %>
-            <div class="alert alert-<%- _class -%>" role="alert">
-              <%- element -%>
-            </div>
-            <%
-          });
-        }
-    %>
-  </div>
-<% } %>
+<div style="margin: 60px 10px 0 10px;" id="#alert-container">
+  <%
+      for ( const i in flashMessages ) {
+        const _class = (i === 'error') ? 'danger' : i;
+        flashMessages[i].forEach(element => {
+          %>
+          <div class="alert alert-<%- _class -%> alert-dismissible fade show" role="alert">
+            <%- element -%>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          <%
+        });
+      }
+  %>
+</div>

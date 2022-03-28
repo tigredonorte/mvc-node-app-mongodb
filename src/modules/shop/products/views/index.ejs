@@ -4,7 +4,7 @@
   <% if(hasProducts) { %>
   <section class="row" style="margin: 0 20px">
     <% products.forEach((product, index) => { %>
-    <article class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-3" style="padding: 5px">
+    <article class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-3" style="padding: 5px" id="<%- product._id -%>">
       <a class="text-reset text-decoration-none" href="/shop/product/<%- product._id %>">
         <div class="card" style="margin: 5px">
           <img
@@ -20,9 +20,7 @@
               <% if (isAdmin) {%>
               <div class="btn-group">
                 <a class="btn btn-dark" style="margin: 5px" href="/admin/shop/product/edit/<%- product._id %>">Edit</a>
-                <a class="btn btn-dark" style="margin: 5px" href="/admin/shop/product/delete/<%- product._id %>"
-                  >Delete</a
-                >
+                <a class="btn btn-dark" style="margin: 5px" onclick="deleteProduct('<%- product._id -%>', '<%- csrfToken -%>')">Delete</a>
               </div>
               <% } else { %>
               <div style="margin-bottom: 5px" class="col-12">
@@ -57,4 +55,7 @@
   <% } %>
 </main>
 
+<% if (isAdmin) { %>
+  <script src="/js/admin.js" type="text/javascript"></script>
+<% } %>
 <%- include ("../../../../template/footer") %>

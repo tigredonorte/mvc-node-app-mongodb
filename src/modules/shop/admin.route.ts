@@ -12,7 +12,7 @@ AdminRoutes.get('/product/add', errorGuard(productsController.add));
 AdminRoutes.post('/product/add', validator.valid(false), errorGuard(productsController.addPost));
 AdminRoutes.get('/product/edit/:id', errorGuard(productsController.edit));
 AdminRoutes.post('/product/edit/:id', validator.valid(true), errorGuard(productsController.editPatch));
-AdminRoutes.get('/product/delete/:id', errorGuard(productsController.delete));
+AdminRoutes.delete('/product/:id', errorGuard(productsController.delete));
 AdminRoutes.get('/', errorGuard(productsController.list));
 
 export { AdminRoutes };

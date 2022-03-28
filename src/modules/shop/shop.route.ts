@@ -18,7 +18,7 @@ ShopRoutes.get('/product/:id', errorGuard(productsController.show));
 ShopRoutes.get('/cart', authRouteGuard, errorGuard(cartController.list));
 ShopRoutes.post('/cart/increase', authRouteGuard, errorGuard(cartController.increase));
 ShopRoutes.post('/cart/decrease', authRouteGuard, errorGuard(cartController.decrease));
-ShopRoutes.post('/cart/delete', authRouteGuard, errorGuard(cartController.delete));
+ShopRoutes.delete('/cart/:productId', authRouteGuard, errorGuard(cartController.delete));
 
 // orders
 ShopRoutes.get('/orders', authRouteGuard, errorGuard(ordersController.list));
