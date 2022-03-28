@@ -1,139 +1,162 @@
 import { ObjectId } from 'mongodb';
-import { Database } from '../../../utils/database';
-import { ProductsModel } from '../products/products.model';
+import mongoose, { Schema } from 'mongoose';
+import { IProduct, Product, ProductsModel } from '../products/products.model';
 
 export interface ICart {
-  _id: any;
   total: number;
-  products: Record<string, ICartItem>;
+  products: Map<string, ICartItem>;
 }
 
 export interface ICartItem {
-  productId: string;
-  productName: string;
+  product: IProduct;
   amount: number;
   total: number;
 }
 
+export const cartItemSchema = new Schema<ICartItem>({
+  product: {
+    type: Product.schema,
+  },
+  amount: {
+    type: Number,
+    default: 1,
+  },
+  total: {
+    type: Number,
+    default: 0,
+  },
+});
+
+const Cart = mongoose.model(
+  'cart',
+  new Schema<ICart>({
+    total: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    products: {
+      type: Map,
+      of: cartItemSchema,
+      default: new Map(),
+    },
+  })
+);
+
 export class CartModel {
   productModel = new ProductsModel();
-  emptyCart: ICart = { total: 0, _id: '', products: {} };
+  emptyCart: ICart = { total: 0, products: new Map() };
 
   getId = (userId: string) => ({ _id: new ObjectId(userId) });
 
-  async clearCart(userId: string): Promise<boolean> {
-    try {
-      if (!userId) {
-        throw new Error('You must inform the user Id');
-      }
-      await this.db().deleteOne(this.getId(userId));
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+  async clearCart(userId: string): Promise<void> {
+    this.checkId('_', userId);
+    await Cart.deleteOne(this.getId(userId));
   }
 
   async getByUserId(userId: string): Promise<ICart> {
     try {
-      const cart = (await this.db().findOne(this.getId(userId))) as unknown as ICart;
+      this.checkId('_', userId);
+      const cart = await Cart.findOne(this.getId(userId));
       if (cart) {
         return cart;
       }
-      await this.db().insertOne({
+      const _cart = new Cart({
         _id: new ObjectId(userId),
         total: 0,
         products: {},
       });
-      return (await this.db().findOne(this.getId(userId))) as unknown as ICart;
+      await _cart.save();
+
+      return _cart;
     } catch (error) {
       console.error(error);
       return this.emptyCart;
     }
   }
 
-  async increase(productId: string, userId: string): Promise<boolean> {
-    try {
-      const product = await this.productModel.get(productId);
-      const cart = await this.getByUserId(userId);
-      if (!cart.products[productId]) {
-        await this.db().updateOne(
-          { _id: new ObjectId(userId) },
-          {
-            $inc: {
-              total: product.price,
-            },
-            $set: {
-              [`products.${productId}.product`]: product,
-              [`products.${productId}.amount`]: 1,
-              [`products.${productId}.total`]: product.price,
-            },
-          }
-        );
-        return true;
-      }
-
-      await this.db().updateOne(
+  async increase(productId: string, userId: string): Promise<void> {
+    this.checkId(productId, userId);
+    const product = await this.productModel.get(productId);
+    if (!product) {
+      return await this.drop(productId, userId);
+    }
+    const cart = new Cart(await this.getByUserId(userId));
+    if (!cart?.products?.get(productId)) {
+      await Cart.updateOne(
         { _id: new ObjectId(userId) },
         {
           $inc: {
             total: product.price,
+          },
+          $set: {
+            [`products.${productId}.product`]: product,
             [`products.${productId}.amount`]: 1,
             [`products.${productId}.total`]: product.price,
           },
         }
       );
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
+      return;
     }
+
+    await this.changeQuantity({ userId, productId, productPrice: product.price, increment: true });
   }
 
-  async decrease(productId: string, userId: string): Promise<boolean> {
-    try {
-      const product = await this.productModel.get(productId);
+  async decrease(productId: string, userId: string): Promise<void> {
+    this.checkId(productId, userId);
+    const product = await this.productModel.get(productId);
+    if (!product) {
+      return await this.drop(productId, userId);
+    }
+    const cart = await this.getByUserId(userId);
+    if (cart.products.get(productId)?.amount === 1) {
+      return await this.drop(productId, userId);
+    }
+
+    await this.changeQuantity({ userId, productId, productPrice: product.price, increment: false });
+  }
+
+  async drop(productId: string, userId: string): Promise<void> {
+    this.checkId(productId, userId);
+    let product = await this.productModel.get(productId);
+    if (!product) {
       const cart = await this.getByUserId(userId);
-      if (cart.products[productId].amount === 1) {
-        console.log(productId);
-        await this.db().updateOne(
-          { _id: new ObjectId(userId) },
-          {
-            $inc: {
-              total: -product.price,
-            },
-            $unset: {
-              [`products.${productId}`]: '',
-            },
-          }
-        );
-        return true;
+      product = cart.products.get(productId)?.product as IProduct;
+    }
+
+    await Cart.updateOne(
+      { _id: new ObjectId(userId) },
+      {
+        $inc: {
+          total: -(product?.price ?? 0),
+        },
+        $unset: {
+          [`products.${productId}`]: '',
+        },
       }
-
-      await this.db().updateOne(
-        { _id: new ObjectId(userId) },
-        {
-          $inc: {
-            total: -product.price,
-            [`products.${productId}.amount`]: -1,
-            [`products.${productId}.total`]: -product.price,
-          },
-        }
-      );
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+    );
   }
 
-  async drop(productId: string, userId: string): Promise<boolean> {
-    try {
-      return true;
-    } catch (error) {
-      return false;
-    }
+  private async changeQuantity(data: { userId: string; productId: string; productPrice: number; increment: boolean }) {
+    const multiplier = data.increment ? 1 : -1;
+    await Cart.updateOne(
+      { _id: new ObjectId(data.userId) },
+      {
+        $inc: {
+          total: multiplier * data.productPrice,
+          [`products.${data.productId}.amount`]: multiplier * 1,
+          [`products.${data.productId}.total`]: multiplier * data.productPrice,
+        },
+      }
+    );
   }
 
-  db = () => Database.db.collection('cart');
+  checkId(productId: string, userId: string) {
+    if (!productId) {
+      throw new Error('You must inform the product Id');
+    }
+    if (!userId) {
+      throw new Error('You must inform the userId');
+    }
+  }
 }

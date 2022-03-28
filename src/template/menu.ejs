@@ -5,17 +5,21 @@
     { title: 'Cart' , link: '/shop/cart' },
   ];
 
-  if (!user) {
-    pages.push({ title: 'Login' , link: '/auth' });
-  } else {
+  if (user) {
     pages.push({ title: 'Orders' , link: '/shop/orders' });
-    pages.push({ title: 'Logout' , link: '/auth/logout' });
   }
 
   adminPages = [];
   if (user) {
     adminPages.push({ title: 'My products' , link: '/admin/shop/' });
     adminPages.push({ title: 'Add Product' , link: '/admin/shop/product/add' });
+  }
+
+  loginPages=[];
+  if (!user) {
+    loginPages.push({ title: 'Login' , link: '/auth' });
+  } else {
+    loginPages.push({ title: 'Logout' , link: '/auth/logout' });
   }
 %>
 </head>
@@ -33,7 +37,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav me-auto">
           <% pages.forEach((page)=> { isActive = curPage === page.link; %>
             <li class="nav-item">
               <a
@@ -44,10 +48,30 @@
                 <%- page.title %>
               </a>
             </li>
-          <% }) %>
+          <% });
+          if (adminPages.length > 0) { %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarAdmin" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Admin
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarAdmin">
+              <% adminPages.forEach((page)=> { isActive = curPage === page.link; %>
+                <li class="nav-item">
+                  <a
+                    class="dropdown-item <%= isActive ? 'active' : '' %>"
+                    <%= isActive ? 'aria-current="page"' : '' %>
+                    href="<%- isActive ? '#' : page.link %>"
+                  >
+                    <%- page.title %>
+                  </a>
+                </li>
+              <% }); %>
+            </ul>
+          </li>
+          <% } %>
         </ul>
         <ul class="navbar-nav">
-          <% adminPages.forEach((page)=> { isActive = curPage === page.link; %>
+          <% loginPages.forEach((page)=> { isActive = curPage === page.link; %>
             <li class="nav-item">
               <a
                 class="nav-link <%= isActive ? 'active' : '' %>"
@@ -64,3 +88,19 @@
   </nav>
 
 <body>
+
+<div style="margin: 60px 10px 0 10px;" id="#alert-container">
+  <%
+      for ( const i in flashMessages ) {
+        const _class = (i === 'error') ? 'danger' : i;
+        flashMessages[i].forEach(element => {
+          %>
+          <div class="alert alert-<%- _class -%> alert-dismissible fade show" role="alert">
+            <%- element -%>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          <%
+        });
+      }
+  %>
+</div>

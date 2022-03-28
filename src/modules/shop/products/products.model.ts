@@ -1,75 +1,107 @@
-import { ObjectId } from 'mongodb';
+import mongoose, { Schema } from 'mongoose';
+import fs from 'fs/promises';
 
-import { Database } from '../../../utils/database';
+import { User } from '../../user/user/user.model';
 
 export interface IProduct {
   title: string;
   price: number;
   description: string;
   img: string;
+  userId: string | Schema.Types.ObjectId;
 }
+
+const productSchema = new Schema<IProduct>({
+  title: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  img: {
+    type: String,
+    required: true,
+  },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: User.modelName,
+    required: true,
+  },
+});
+
+export const Product = mongoose.model('product', productSchema);
 
 export class ProductsModel {
 
-  async list(author?: string): Promise<IProduct[]> {
-    try {
-      const products = await this.db().find(author ? { author } : {}).toArray();
-      return (products as unknown as IProduct[]);
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
+  async paginate(userId: string, page: number, itemsPerPage = 3): Promise<{ products: IProduct[]; total: number }> {
+    const where = userId ? { userId } : {};
+    const total = await Product.countDocuments(where);
+    const products = await Product.find(where)
+      .skip((page - 1) * itemsPerPage)
+      .limit(itemsPerPage)
+      .select(['title', 'price', 'img'])
+      .populate('userId', ['name']);
+    return { products, total: Math.ceil(total / itemsPerPage) };
   }
 
-  async get(id: string): Promise<IProduct> {
-    try {
-      if (!id) {
-        throw new Error('You must inform the product Id');
+  async list(userId?: string): Promise<IProduct[]> {
+    return await Product.find(userId ? { userId } : {})
+      .select(['title', 'price', 'img'])
+      .populate('userId', ['name']);
+  }
+
+  async get(productId: string): Promise<IProduct> {
+    this.checkId(productId);
+    return (await Product.findById(productId)) as IProduct;
+  }
+
+  async add(product: IProduct): Promise<void> {
+    const prod = new Product(product);
+    await prod.save();
+  }
+
+  async edit(productId: string, product: IProduct, oldProduct: IProduct): Promise<void> {
+    this.checkId(productId);
+    if (oldProduct.title !== product.title) {
+      if (!product.img) {
+        const img = product.title.toLowerCase().split(' ').join('-');
+        const ext = oldProduct.img.split('.').pop();
+        await fs.rename(`public/images/products/${oldProduct.img}`, `public/images/products/${img}.${ext}`);
+        product.img = `${img}.${ext}`;
+      } else {
+        this.deleteFile(product);
       }
-      return await this.db().findOne({ _id: new ObjectId(id) }) as unknown as IProduct;
-    } catch (error: any) {
-      console.error(error);
-      throw new Error(error);
     }
+    await Product.updateOne({ _id: productId }, { $set: product });
   }
 
-  async add(product: IProduct): Promise<boolean> {
-    try {
-      product.price = parseFloat(product.price.toString());
-      this.db().insertOne(product);
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+  async delete(productId: string, product: IProduct): Promise<void> {
+    this.checkId(productId);
+    this.deleteFile(product);
+    await Product.findByIdAndDelete(productId);
   }
 
-  async edit(id: string, product: IProduct): Promise<boolean> {
-    try {
-      if (!id) {
-        throw new Error('You must inform the product Id');
-      }
-      product.price = parseFloat(product.price.toString());
-      await this.db().updateOne({ _id: new ObjectId(id) }, { $set: product });
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
+  async isAuthorized(productId: string, userId: string): Promise<IProduct> {
+    const product = await Product.findOne({ _id: productId, userId });
+    if (!product) {
+      throw new Error('Not Authorized!');
     }
+    return product;
   }
 
-  async delete(id: string): Promise<boolean> {
-    try {
-      if (!id) {
-        throw new Error('You must inform the product Id');
-      }
-      await this.db().deleteOne({ _id: new ObjectId(id) });
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+  async deleteFile(product: IProduct) {
+    await fs.unlink(`public/images/products/${product.img}`);
   }
 
-  db = () => Database.db.collection('products');
+  checkId(productId: string) {
+    if (!productId) {
+      throw new Error('You must inform the product Id');
+    }
+  }
 }

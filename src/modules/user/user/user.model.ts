@@ -1,93 +1,90 @@
 import bcrypt from 'bcrypt';
-import { Database } from '../../../utils/database';
-import { Token } from '../../../utils/token';
+import mongoose, { Schema } from 'mongoose';
 
 export interface IUser {
+  _id?: string;
   email: string;
   password: string;
   name: string;
+  recoverDate?: Date,
+  recoverHash?: string,
+  paymentName?: 'stripe';
+  paymentKey?: string;
 }
-export class UsersModel {
 
+const userSchema = new Schema<IUser>({
+  email: {
+    type: String,
+    trim: true,
+    lowercase: true,
+    required: [true, 'Email required'],
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  recoverDate: Date,
+  recoverHash: String,
+  paymentName: String,
+  paymentKey: String
+});
+
+export const User = mongoose.model('user', userSchema);
+
+export class UsersModel {
   async list(): Promise<IUser[]> {
     try {
-      return [];
+      return await User.find();
     } catch (error) {
       console.error(error);
       return [];
     }
   }
 
-  async get(id: string): Promise<Partial<IUser>> {
-    try {
-      return {};
-    } catch (error) {
-      return {};
-    }
+  async get(id: string): Promise<IUser | null> {
+    this.checkId(id);
+    return (await User.findById({ _id: id })) as IUser;
   }
 
-  async add(user: IUser): Promise<boolean> {
-    try {
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+  async getByEmail(email: string): Promise<IUser | null> {
+    return (await User.exists({ email })) as IUser;
   }
 
-  async edit(id: string, user: IUser): Promise<boolean> {
-    try {
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+  async add(user: IUser): Promise<void> {
+    const salt = await bcrypt.genSalt(10);
+    const password = await bcrypt.hash(user.password as string, salt);
+    const u = new User({
+      ...user,
+      password,
+    });
+    await u.save();
   }
 
-  async delete(id: string): Promise<boolean> {
-    try {
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
+  async edit(id: string, user: IUser): Promise<void> {
+    this.checkId(id);
+    if (user.password) {
+      user.password = await this.encryptPassword(user.password);
     }
+    await User.updateOne({ _id: id }, { $set: user });
   }
 
-  async login(user: { email: string; password: string }): Promise<false | string> {
-    try {
-      const foundUser = await this.db().findOne({ email: user.email });
-      if (!foundUser) {
-        return false;
-      }
-      const password_valid = await bcrypt.compare(user.password, foundUser.password);
-      if (!password_valid) {
-        return false;
-      }
-      return Token.sign({
-        _id: foundUser._id.toString(),
-        email: foundUser.email,
-        name: foundUser.name,
-      }, '1h');
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+  async delete(id: string): Promise<void> {
+    await User.deleteOne({ _id: id });
   }
 
-  async signup(user: IUser): Promise<boolean> {
-    try {
-      const salt = await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash(user.password, salt);
-      this.db().insertOne({
-        ...user,
-        password: hash,
-      });
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+  async encryptPassword(password: string) {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
   }
 
-  db = () => Database.db.collection('users');
+  checkId(productId: string) {
+    if (!productId) {
+      throw new Error('You must inform the product Id');
+    }
+  }
 }

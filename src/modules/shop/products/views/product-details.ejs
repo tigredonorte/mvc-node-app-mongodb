@@ -8,7 +8,7 @@
       <div class="wrapper row">
         <div class="preview col-md-6">
           <div class="preview-pic tab-content">
-            <div class="tab-pane active" id="pic-1"><img src="<%- product.img %>" /></div>
+            <div class="tab-pane active" id="pic-1"><img src="/images/products/<%- product.img %>" /></div>
           </div>
         </div>
         <div class="details col-md-6">
@@ -30,6 +30,7 @@
             <form method="POST" action="/shop/cart/increase">
               <button class="add-to-cart btn btn-primary">Add to cart</button>
               <input type="hidden" name="productId" value="<%- product._id %>" />
+              <input type="hidden" value="<%- csrfToken %>" name="_csrf" />
             </form>
           </div>
         </div>

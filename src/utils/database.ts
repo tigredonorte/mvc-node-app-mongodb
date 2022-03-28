@@ -1,27 +1,13 @@
 import { Db, MongoClient, ServerApiVersion } from 'mongodb';
+import mongoose from 'mongoose';
 
 require('dotenv').config();
 
 export class Database {
-  static db: Db;
 
-  static instance: Database;
-  static init(callback: () => void) {
-    console.log(process.env.MONGO_URL);
-    const client = new MongoClient(process.env.MONGO_URL || '', {
-      serverApi: ServerApiVersion.v1,
-    });
-    client.connect(() => {
-      Database.db = client.db();
-      callback();
-    });
+  static async init(callback: () => void) {
+    await mongoose.connect(process.env.MONGO_URL || '');
+    callback();
   }
-  private constructor() {}
 
-  static getInstance() {
-    if (!Database.instance) {
-      Database.instance = new Database();
-    }
-    return Database.instance;
-  }
 }
